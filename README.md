@@ -168,3 +168,7 @@ undone on exit. If mpkloop crashes, re-select the program on the MPK. Opt out wi
 - The Textual screen takes the mouse; `--classic` is the lighter curses screen and shows
   one bank of 8 tracks at a time.
 - Built with Python + numpy/scipy, sounddevice (PortAudio → PipeWire), mido/rtmidi, Textual.
+
+## License
+
+MIT, see `LICENSE`.
