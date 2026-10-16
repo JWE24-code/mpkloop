@@ -1,0 +1,8 @@
+mido
+numpy
+python-rtmidi
+rich
+scipy
+sounddevice
+soundfile
+textual

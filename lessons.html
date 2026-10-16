@@ -1,0 +1,2593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mpkloop Lessons</title>
+<style>
+/* Layout: "practice station" — controller drawing + task card beside a lesson rail; reference sheets below. */
+:root {
+  --bg: #e7e9ec; --surface: #f6f7f9; --sunk: #dfe2e7; --fg: #15171c; --muted: #59606c; --line: #c6cbd3;
+  --tape: #f5b31c; --tape-ink: #1a1405; --link: #8a5a00; --ok: #1f9d55; --ok-ink: #ffffff;
+  --bank-a: #e8392f; --bank-b: #1fae62;
+  --dev-body: #1c1e22; --dev-panel: #24272c; --dev-well: #141619; --dev-btn: #383b42; --dev-pad: #33363c;
+  --dev-label: #aeb3bc; --dev-key: #f3f4f6; --dev-black: #121315; --oled: #04060a; --oled-ink: #dfeeff;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1114; --surface: #181b20; --sunk: #12151a; --fg: #e7e9ed; --muted: #9aa1ad; --line: #2b3038;
+    --tape: #ffbb2e; --tape-ink: #1a1405; --link: #ffc65a; --ok: #2fd27a; --ok-ink: #06240f;
+    --bank-a: #ff4d42; --bank-b: #2fd27a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1114; --surface: #181b20; --sunk: #12151a; --fg: #e7e9ed; --muted: #9aa1ad; --line: #2b3038;
+  --tape: #ffbb2e; --tape-ink: #1a1405; --link: #ffc65a; --ok: #2fd27a; --ok-ink: #06240f;
+  --bank-a: #ff4d42; --bank-b: #2fd27a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--fg); font: 16px/1.55 var(--font-body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 24px 64px; }
+h1, h2, h3 { font-family: var(--font-display); font-stretch: 118%; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.02; }
+h2 { font-size: 1.6rem; font-weight: 750; }
+h3 { font-size: 1.25rem; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--link); }
+kbd { font: 600 0.8em var(--font-mono); padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line); border-bottom-width: 2px; background: var(--surface); white-space: nowrap; }
+code { font: 500 0.9em var(--font-mono); background: var(--sunk); padding: 1px 5px; border-radius: 4px; }
+.eyebrow { font: 600 0.72rem var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--tape); outline-offset: 2px; }
+
+/* header */
+header.top { display: grid; gap: 14px; margin-bottom: 22px; }
+header.top .lede { max-width: 64ch; color: var(--muted); font-size: 1.05rem; }
+.tape { display: inline-block; background: var(--tape); color: var(--tape-ink); font: 600 0.8rem var(--font-mono); padding: 3px 10px; transform: rotate(-1.2deg); letter-spacing: 0.04em; }
+.toc { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 0.92rem; }
+.toc a { padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; color: var(--fg); background: var(--surface); }
+.toc a:hover { border-color: var(--tape); }
+.chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 0.85rem; cursor: pointer; color: var(--fg); font-family: var(--font-body); }
+.chip .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.chip.on .dot { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent); }
+.chip.err .dot { background: var(--bank-a); }
+
+/* station */
+.station { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 20px; align-items: start; scroll-margin-top: 12px; }
+.rail { display: grid; gap: 3px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+.rail a { display: grid; grid-template-columns: 26px 1fr 34px; gap: 8px; align-items: baseline; padding: 7px 10px; border-radius: 8px; color: var(--muted); font-size: 0.93rem; line-height: 1.3; text-decoration: none; }
+.rail a .n { font: 600 0.78rem var(--font-mono); }
+.rail a .prog { font: 500 0.72rem var(--font-mono); text-align: right; color: var(--muted); }
+.rail a .prog.full { color: var(--ok); font-weight: 700; }
+.rail a:hover { background: var(--sunk); color: var(--fg); }
+.rail a[aria-current="true"] { background: var(--surface); color: var(--fg); box-shadow: inset 3px 0 0 var(--tape); font-weight: 600; }
+.rail select { display: none; }
+.rail .reset { all: unset; cursor: pointer; margin-top: 8px; font-size: 0.78rem; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; padding: 4px 10px; }
+
+.stage { display: grid; gap: 14px; min-width: 0; }
+.stagebar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+.seg { display: inline-flex; background: var(--sunk); border-radius: 9px; padding: 3px; gap: 2px; }
+.seg button { all: unset; cursor: pointer; padding: 6px 14px; border-radius: 7px; font-weight: 600; font-size: 0.9rem; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgb(0 0 0 / 0.15); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.8rem; color: var(--muted); align-items: center; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+.device { background: var(--sunk); border-radius: 14px; padding: 12px; position: relative; }
+.device svg { display: block; width: 100%; height: auto; }
+.device svg text { font-family: var(--font-mono); user-select: none; }
+.ctl { cursor: pointer; }
+.ctl:hover .face { filter: brightness(1.25); }
+.ring { fill: none; stroke: var(--tape); stroke-width: 4; }
+.ring.done { stroke: var(--ok); }
+.pulse { animation: pulse 1.3s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.35; } }
+.flash { animation: flash 0.9s ease-out forwards; }
+@keyframes flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pulse, .flash { animation: none; } }
+.toast { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 90%; text-align: center; }
+.toast.show { opacity: 1; }
+.toast.ok { background: var(--ok); color: var(--ok-ink); }
+
+.lower { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.stepcard .body { display: grid; gap: 10px; }
+.stepcard .body p, .stepcard .body li { max-width: 66ch; }
+.stepcard ul, .stepcard ol { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.tasks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.tasks li { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: center; padding: 6px 10px; border-radius: 8px; background: var(--sunk); cursor: pointer; }
+.tasks li .num { font: 700 0.75rem var(--font-mono); background: var(--tape); color: var(--tape-ink); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; }
+.tasks li.done { background: color-mix(in srgb, var(--ok) 14%, var(--surface)); }
+.tasks li.done .num { background: var(--ok); color: var(--ok-ink); }
+.tasks li .what { font-size: 0.93rem; }
+.tasks li .how { color: var(--muted); font-size: 0.8rem; }
+.tip { border-left: 3px solid var(--line); padding-left: 12px; color: var(--muted); font-size: 0.93rem; }
+.nav { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.btn { all: unset; cursor: pointer; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.92rem; background: var(--fg); color: var(--bg); }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+.btn.ok { background: var(--ok); color: var(--ok-ink); }
+.btn.ready { animation: ready 1.2s ease-in-out infinite; }
+@keyframes ready { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 50%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
+@media (prefers-reduced-motion: reduce) { .btn.ready { animation: none; } }
+.btn[disabled] { opacity: 0.35; cursor: default; }
+.dots { display: flex; gap: 5px; flex-wrap: wrap; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.dots i.on { background: var(--tape); }
+.dots i.done { background: var(--ok); }
+.info h3 { font-size: 1.05rem; }
+.info .what { color: var(--muted); font-size: 0.93rem; }
+.info .state { font: 500 0.78rem var(--font-mono); color: var(--muted); }
+.mock { font: 500 0.78rem/1.45 var(--font-mono); background: var(--oled); color: var(--oled-ink); border-radius: 8px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
+.mock .t { color: #8a93a3; }
+.mock .play { color: #4ade80; } .mock .rec { color: #ff6b61; } .mock .armed { color: #ffd166; } .mock .odub { color: #d8a7ff; } .mock .mute { color: #8a93a3; } .mock .empty { color: #58616f; }
+.mock .log { color: #ffd166; }
+
+/* reference */
+section.ref { margin-top: 56px; display: grid; gap: 18px; scroll-margin-top: 12px; }
+.ref .intro { color: var(--muted); max-width: 70ch; }
+.lessonlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.lessonlist ol { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; font-size: 0.93rem; }
+.lessonlist a { color: var(--link); }
+.lessonlist li.done a { color: var(--muted); }
+.lessonlist li.done::marker { color: var(--ok); }
+.lib { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.lib .card { gap: 8px; padding: 14px 16px; }
+.lib ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; font-size: 0.92rem; }
+.padtag { font: 600 0.72rem var(--font-mono); color: var(--muted); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 600 0.72rem var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.note { font-size: 0.85rem; color: var(--muted); }
+
+@media (max-width: 900px) {
+  .station { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; }
+  .rail a, .rail .reset { display: none; }
+  .rail select { display: block; width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: 600 0.95rem var(--font-body); }
+  .lower { grid-template-columns: minmax(0, 1fr); }
+  .device { padding: 6px; }
+}
+</style>
+</head>
+
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow" data-i18n="eyebrow"></span>
+    <h1 data-i18n="h1"></h1>
+    <p class="lede" data-i18n="lede"></p>
+    <div class="toc">
+      <span class="tape" data-i18n="tape"></span>
+      <a href="#lesson-1" data-i18n="toc_lessons"></a>
+      <a href="#all-lessons" data-i18n="toc_all"></a>
+      <a href="#sounds" data-i18n="toc_sounds"></a>
+      <a href="#keys" data-i18n="toc_keys"></a>
+      <a href="#trouble" data-i18n="toc_trouble"></a>
+      <button class="chip" id="midi" type="button"><span class="dot"></span><span id="midi-label">Connect MPK</span></button>
+      <div class="seg lang" role="group" aria-label="Language">
+        <button id="lang-en" type="button" aria-pressed="true">EN</button>
+        <button id="lang-nl" type="button" aria-pressed="false">NL</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="station" id="station">
+    <nav class="rail" aria-label="Lessons" id="rail"></nav>
+    <div class="stage">
+      <div class="stagebar">
+        <div class="seg" role="group" aria-label="Mode">
+          <button id="mode-lessons" aria-pressed="true" type="button" data-i18n="mode_lessons"></button>
+          <button id="mode-explore" aria-pressed="false" type="button" data-i18n="mode_explore"></button>
+        </div>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--tape)"></i><span data-i18n="leg_todo"></span></span>
+          <span><i class="dot" style="background:var(--ok)"></i><span data-i18n="leg_done"></span></span>
+          <span><i class="dot" style="background:var(--bank-a)"></i>bank A</span>
+          <span><i class="dot" style="background:var(--bank-b)"></i>bank B</span>
+        </div>
+      </div>
+      <div class="device">
+        <svg id="mpk" viewBox="0 -48 1000 612" role="img" aria-label="Akai MPK mini 3"></svg>
+        <div class="toast" id="toast"></div>
+      </div>
+      <div class="lower">
+        <article class="card stepcard" id="stepcard" aria-live="polite"></article>
+        <aside class="card info" id="info" aria-live="polite"></aside>
+      </div>
+      <p class="note" data-i18n="note"></p>
+    </div>
+  </div>
+
+  <section class="ref" id="all-lessons">
+    <h2 data-i18n="all_h2"></h2>
+    <p class="intro" data-i18n="all_intro"></p>
+    <div class="lessonlist" id="lessonlist"></div>
+  </section>
+
+  <section class="ref" id="sounds">
+    <h2 data-i18n="sounds_h2"></h2>
+    <p class="intro" data-i18n="sounds_intro"></p>
+    <div class="lib" id="lib"></div>
+    <h3 style="margin-top:8px" data-i18n="kits_h3"></h3>
+    <p class="intro" data-i18n="kits_intro"></p>
+    <div class="tablewrap"><table id="kits"></table></div>
+  </section>
+
+  <section class="ref" id="keys">
+    <h2 data-i18n="keys_h2"></h2>
+    <div class="tablewrap"><table id="keytable"></table></div>
+  </section>
+
+  <section class="ref" id="trouble">
+    <h2 data-i18n="trouble_h2"></h2>
+    <div class="tablewrap"><table id="troubletable"></table></div>
+  </section>
+</div>
+
+<script>
+// ------------------------------------------------------------------ mpkloop facts
+const PAGES = ["Volume", "Pan", "Filter", "Speed", "Delay send", "Reverb send", "Sound", "Global",
+               "Track FX", "FX Amount", "Duck", "Seq", "Sampler"];
+const T8 = s => [...Array(8)].map((_, i) => `T${i + 1} ${s}`);
+const PAGE_PARAMS = [
+  T8("Vol"), T8("Pan"), T8("Filter"), T8("Speed"), T8("Delay"), T8("Reverb"),
+  ["Cutoff", "Resonance", "Attack", "Release", "Synth Vol", "Drum Vol", "Live Delay", "Live Reverb"],
+  ["Tempo", "Rec Mode", "Metronome", "Input Gain", "Delay Time", "Delay Fdbk", "Reverb Size", "Master"],
+  T8("FX"), T8("FX Amt"), T8("Duck"),
+  ["Lane", "Swing", "Length", "Kit", "Seq Vol", "Seq Pan", "Seq Delay", "Seq Reverb"],
+  ["Pitch", "Start", "Length", "Attack", "Release", "Smp Vol", "Smp Filter", "Reverse"],
+];
+const PARAM_HELP_ALL = {
+ en: {
+  "Vol": "Volume of that track.", "Pan": "Left / right position of that track.",
+  "Filter": "DJ filter: turn left to muffle (low-pass), right to thin out (high-pass). Middle is off.",
+  "Speed": "Reverse ×2, reverse, reverse ½, ½ speed, normal, double speed.",
+  "Delay": "How much of that track goes to the echo.", "Reverb": "How much of that track goes to the reverb.",
+  "Cutoff": "Brightness of the synth.", "Resonance": "Squelch / whistle at the cutoff point.",
+  "Attack": "How slowly synth notes fade in.", "Release": "How long synth notes ring after you let go.",
+  "Synth Vol": "Volume of the keys.", "Drum Vol": "Volume of the drum pads.",
+  "Live Delay": "Echo on what you play live. New loops start with this amount.",
+  "Live Reverb": "Reverb on what you play live. New loops start with this amount.",
+  "Tempo": "Beats per minute. Locked (shows LOCK) once a loop exists.",
+  "Rec Mode": "Free→Tempo, Quantize, 1 bar, 2 bars, 4 bars, 8 bars.",
+  "Metronome": "Click volume.", "Input Gain": "Mic / line input level. 0 = off. Use headphones.",
+  "Delay Time": "Echo spacing: 1/16, 1/8, dotted 1/8, 1/4, dotted 1/4, 1/2.",
+  "Delay Fdbk": "How many echoes.", "Reverb Size": "Small room to huge hall.", "Master": "Overall volume.",
+  "FX": "Insert effect for that track: Off, Crush, Drive, Chorus, Tape, Comb.",
+  "FX Amt": "How strong that track's effect is.",
+  "Duck": "How much that track dips on every kick (live kick, sequencer kick lane, chop 1).",
+  "Lane": "Which drum lane the step pads and the grid cursor edit.", "Swing": "50% straight to 75% shuffled.",
+  "Seq:Length": "8, 12 or 16 steps per pattern.", "Kit": "Drum kit for the pads and the sequencer.",
+  "Seq Vol": "Volume of the sequencer lane.", "Seq Pan": "Pan of the sequencer lane.",
+  "Seq Delay": "Sequencer lane to the echo.", "Seq Reverb": "Sequencer lane to the reverb.",
+  "Pitch": "Transpose the sample in semitones (chops follow).", "Start": "Where the sample region starts.",
+  "Sampler:Length": "How much of the sample after the start point is used. The 8 chops divide this region.",
+  "Sampler:Attack": "Fade-in of sampler notes.", "Sampler:Release": "Fade-out of sampler notes.",
+  "Smp Vol": "Sampler volume.", "Smp Filter": "Low-pass filter on the sampler.", "Reverse": "Play the sample backwards.",
+ },
+ nl: {
+  "Vol": "Volume van die track.", "Pan": "Positie links / rechts van die track.",
+  "Filter": "DJ-filter: naar links dempt (low-pass), naar rechts maakt dun (high-pass). Midden is uit.",
+  "Speed": "Achteruit ×2, achteruit, achteruit ½, halve snelheid, normaal, dubbele snelheid.",
+  "Delay": "Hoeveel van die track naar de echo gaat.", "Reverb": "Hoeveel van die track naar de galm gaat.",
+  "Cutoff": "Helderheid van de synth.", "Resonance": "Piep / fluit op het kantelpunt van het filter.",
+  "Attack": "Hoe langzaam synthnoten aanzwellen.", "Release": "Hoe lang synthnoten naklinken als je loslaat.",
+  "Synth Vol": "Volume van de toetsen.", "Drum Vol": "Volume van de drumpads.",
+  "Live Delay": "Echo op wat je live speelt. Nieuwe loops beginnen met deze hoeveelheid.",
+  "Live Reverb": "Galm op wat je live speelt. Nieuwe loops beginnen met deze hoeveelheid.",
+  "Tempo": "Slagen per minuut. Vergrendeld (toont LOCK) zodra er een loop is.",
+  "Rec Mode": "Free→Tempo, Quantize, 1 bar, 2 bars, 4 bars, 8 bars.",
+  "Metronome": "Volume van de klik.", "Input Gain": "Niveau van microfoon / lijningang. 0 = uit. Gebruik een koptelefoon.",
+  "Delay Time": "Afstand tussen echo's: 1/16, 1/8, gepunteerde 1/8, 1/4, gepunteerde 1/4, 1/2.",
+  "Delay Fdbk": "Aantal echo's.", "Reverb Size": "Kleine kamer tot enorme zaal.", "Master": "Totaalvolume.",
+  "FX": "Inserteffect voor die track: Off, Crush, Drive, Chorus, Tape, Comb.",
+  "FX Amt": "Hoe sterk het effect van die track is.",
+  "Duck": "Hoeveel die track wegduikt bij elke kick (live kick, kick-laan van de sequencer, chop 1).",
+  "Lane": "Welke drumlaan de steppads en de cursor in het raster bewerken.", "Swing": "50% strak tot 75% shuffle.",
+  "Seq:Length": "8, 12 of 16 stappen per patroon.", "Kit": "Drumkit voor de pads en de sequencer.",
+  "Seq Vol": "Volume van de sequencerlaan.", "Seq Pan": "Pan van de sequencerlaan.",
+  "Seq Delay": "Sequencerlaan naar de echo.", "Seq Reverb": "Sequencerlaan naar de galm.",
+  "Pitch": "Transponeer de sample in halve tonen (de chops volgen).", "Start": "Waar het samplegebied begint.",
+  "Sampler:Length": "Hoeveel van de sample na het startpunt wordt gebruikt. De 8 chops verdelen dit gebied.",
+  "Sampler:Attack": "Aanzwellen van samplernoten.", "Sampler:Release": "Uitsterven van samplernoten.",
+  "Smp Vol": "Volume van de sampler.", "Smp Filter": "Low-pass filter op de sampler.", "Reverse": "Speel de sample achterstevoren.",
+ },
+};
+const CATS = [
+  ["Pads", ["Saw Pad", "Strings", "Glass Pad", "Dark Pad", "Sweep Pad", "Warm Pad", "Super Pad", "Hollow Pad", "Fifths Pad", "Octave Pad", "Breath Pad", "Bright Pad", "Drone", "Dark Drone", "Shimmer"]],
+  ["Keys", ["FM Keys", "E-Piano", "Clav", "Toy Piano", "Lo-Fi Keys", "Tine Piano", "Wurly", "Soft Keys", "Harpsichord", "Music Box", "Synth Piano", "Celesta", "Dirty Keys", "Glass Keys"]],
+  ["Bass", ["Sub Bass", "Acid", "Reese", "FM Bass", "Pluck Bass", "808 Bass", "Square Bass", "Wobble", "Moog Bass", "Rubber Bass", "Growl", "Deep FM", "Organ Bass", "Chip Bass", "Dub Bass"]],
+  ["Leads", ["Square Lead", "Saw Lead", "Pulse Lead", "Chip Lead", "Fifth Lead", "Sine Lead", "Screamer", "Hoover", "Whistle", "Sync Lead", "Soft Lead", "Octave Lead", "FM Lead", "Theremin", "Buzz Lead"]],
+  ["Plucks", ["Pluck", "Bright Pluck", "Kalimba", "Harp", "Chord Stab", "Minor Stab", "Guitar", "Nylon", "Banjo", "Koto", "Pizzicato", "Trance Pluck", "Steel Drum", "Square Pluck", "Sus Chord"]],
+  ["Bells", ["Bell", "Marimba", "Vibes", "Glockenspiel", "Crystal", "Tubular", "Xylophone", "Gamelan", "Chime", "Soft Bell", "Dream Bell", "Bottle", "Ice"]],
+  ["Organ+", ["Organ", "Perc Organ", "Flute", "Brass", "Choir", "Church Organ", "Soft Organ", "Reed Organ", "Accordion", "Oboe", "Clarinet", "Trumpet", "Horns", "Voice", "Harmonica"]],
+];
+const CAT_HINTS = {
+  en: ["Slow, wide backgrounds", "Chords and comping", "Play an octave or two down", "Melodies on top",
+       "Short notes; Chord Stab plays a major chord per key", "Mallets and shimmer", "Sustained classics"],
+  nl: ["Trage, brede achtergronden", "Akkoorden en begeleiding", "Speel een of twee octaven lager", "Melodieën erbovenop",
+       "Korte noten; Chord Stab speelt een majeurakkoord per toets", "Mallets en glinstering", "Aangehouden klassiekers"],
+};
+const KITS = [
+  ["Classic", ["Kick", "Snare", "Hat", "Open Hat", "Clap", "Tom", "Rim", "Cowbell"]],
+  ["808", ["Kick", "Snare", "Hat", "Open Hat", "Clap", "Tom", "Rim", "Cowbell"]],
+  ["909", ["Kick", "Snare", "Hat", "Open Hat", "Clap", "Tom", "Rim", "Ride"]],
+  ["Electro", ["Kick", "Snare", "Hat", "Open Hat", "Clap", "Zap", "Blip", "Noise Hit"]],
+  ["Lo-Fi", ["Kick", "Snare", "Hat", "Open Hat", "Clap", "Tom", "Rim", "Cowbell"]],
+  ["Trap", ["Kick", "Snare", "Hat", "Open Hat", "Clap", "Tom 808", "Rim", "Rev Cymbal"]],
+  ["Techno", ["Kick", "Snare", "Hat", "Open Hat", "Clap", "Rumble", "Blip", "Zap Noise"]],
+  ["Breaks", ["Kick", "Snare", "Hat", "Open Hat", "Ghost Snare", "Low Tom", "High Tom", "Ride"]],
+  ["Dub", ["Kick", "Snare", "Hat", "Open Hat", "Rim", "Tom", "Bongo", "Shaker"]],
+  ["Glitch", ["Kick", "Snare", "Tick", "Click Hat", "Glitch 1", "Glitch 2", "Glitch 3", "Bitblip"]],
+  ["Jazz", ["Kick", "Brush Snare", "Hat", "Ride", "Brush Sweep", "Low Tom", "Rim Click", "Hat Foot"]],
+  ["Percussion", ["Low Conga", "High Conga", "Shaker", "Tambourine", "Bongo", "Woodblock", "Claves", "Triangle"]],
+];
+const FX_PADS = ["Rep 1/2", "Rep 1/4", "Rep 1/8", "Rep 1/16", "TapeStop", "Reverse", "Half", "Crush"];
+// the user's MPK preset (PGM:Garageband): pads on channel 10, notes 36-51, PC 0-15, CC 16-31; knobs CC 70-77
+const PAD_CH = 9, PAD_NOTE0 = 36, PAD_PC0 = 0, PAD_CC0 = 16, KNOB_CC0 = 70;
+
+function padLabel(i, st) {
+  if (st.mode === "note") {
+    if (st.bank === "A") return `LOOP ${i + 1}`;
+    if (st.padb === "Steps") return `STEP ${i + 1}`;
+    if (st.padb === "Chops") return `CHOP ${i + 1}`;
+    if (st.padb === "Scenes") return `SCENE ${i + 1}`;
+    if (st.padb === "FX") return FX_PADS[i];
+    return KITS[st.kit || 0][1][i];
+  }
+  if (st.mode === "cc") return st.bank === "A" ? `MUTE ${i + 1}` : `UNDO ${i + 1}`;
+  return st.bank === "A" ? PAGES[i] : (i < 7 ? CATS[i][0] : "Next kit");
+}
+
+// ------------------------------------------------------------------ interface text (EN / NL)
+const TXT = {
+ en: {
+  eyebrow: "Akai MPK mini 3 · mpkloop", h1: "Learn to loop on your MPK&nbsp;mini",
+  lede: "Four lessons: meet the controller, then make three songs. Each song uses more of mpkloop, and every step shows exactly what to press. Do it on the drawing by clicking, or do it on the real MPK: connect it and the page ticks off each move as you make it.",
+  tape: "START: type <b>mpkloop</b> in a terminal", toc_lessons: "Lessons", toc_all: "All steps", toc_sounds: "Sound library",
+  toc_keys: "Computer keys", toc_trouble: "Troubleshooting", mode_lessons: "Lessons", mode_explore: "Explore freely",
+  leg_todo: "to do", leg_done: "done",
+  note: "Every control carries the name printed on your MPK; positions of the small buttons are approximate. Use ← → on your keyboard to move between steps.",
+  all_h2: "All lessons at a glance", all_intro: "Click any step to open it on the controller above. Finished steps are ticked.",
+  sounds_h2: "Sound library",
+  sounds_intro: "102 synth sounds in 7 categories, plus 12 drum kits, and you can add your own. Choose them with <b>PROG CHANGE</b> on and <b>bank B</b>: pads 1–7 are the categories (tap the same pad again for the next sound in it) and pad 8 switches drum kit. On the computer: <kbd>[</kbd> <kbd>]</kbd> step through sounds, <kbd>k</kbd> changes kit, <kbd>u</kbd> opens the library screen (favorites ★ come first on the pads).",
+  kits_h3: "Drum kits", kits_intro: "Bank B pads in normal mode. Bottom row is pads 1–4, top row is pads 5–8.",
+  keys_h2: "Computer keys", trouble_h2: "If something acts weird",
+  th_key: "Key", th_does: "Does", th_see: "What you see", th_fix: "Fix", th_kit: "Kit", pad: "Pad",
+  connect: "Connect MPK", connect_chrome: "Connect MPK (needs Chrome)", no_webmidi: "No Web MIDI in this browser",
+  webmidi_hint: "Web MIDI needs Chrome, Edge or Opera. See Troubleshooting.", no_device: "No MIDI device found: plug in the MPK",
+  connected: "MPK connected", listening: "listening", blocked: "MIDI blocked here: open lessons.html in Chrome",
+  blocked_hint: "Web MIDI was refused in this viewer. Open the local copy in Chrome (see Troubleshooting).",
+  reset: "Reset progress", lesson: "Lesson", step: "step", of: "of", your_moves: "Your moves",
+  comp_tip: "This step happens in the mpkloop window. Press <b>Done</b> when you've tried it.",
+  on_computer: "On your computer", on_computer_d: "This step happens in the mpkloop window, not on the MPK.",
+  what_this_does: "What this does", explore: "Explore", pads_state: (bank, mode, page) => `Pads: bank ${bank} · ${mode} · knobs: ${page} page`,
+  mode_normal: "normal", back: "← Back", next: "Next →", next_lesson: "Next lesson →", all_done: "All done 🎉", skip: "Skip →", done_next: "Done, next →",
+  done: "done", do_midi: "do it on the MPK, or click it on the drawing", do_click: "click it on the drawing, or press Connect MPK and do it for real",
+  n_of_m: (n, m) => `${n} of ${m} done`, done_midi: "Done on the MPK ✓", done_step: "Step done ✓",
+  thats: (h, next, label) => `That's ${h}. Next: ${next} (${label})`,
+  explore_h: "Use the drawing like your MPK",
+  explore_b: `<p>Click <b>BANK A/B</b>, <b>CC</b> and <b>PROG CHANGE</b> to switch pad modes, just like on the controller. In PROG CHANGE mode, clicking pads changes the knob page (bank A) or the sound and drum kit (bank B).</p><p>Click any pad, knob or button to see what it does in the current mode. With the MPK connected, the drawing follows what you press for real.</p>`,
+  back_lessons: "← Back to the lessons", pick: "Pick a control", pick_d: "Click anything on the drawing, or press it on your MPK.",
+  page_word: "page", kit_word: "Kit", padtag: "PROG CHANGE · BANK B · PAD",
+  d: {
+    loop: i => [`Pad ${i}: loop track ${i}`, "Tap to record, tap again to close the loop. Tap a playing loop to overdub, tap again to stop. Hold about a second to clear it."],
+    drum: (i, name, kit) => [`Pad ${i}: ${name}`, `Drum from the ${kit} kit. Hit harder for louder; squeeze after the hit to sweep the mix filter.`],
+    step: i => [`Pad ${i}: step ${i}`, "Toggles step " + i + " (or " + (i + 8) + " after Tab) of the selected sequencer lane."],
+    chop: i => [`Pad ${i}: chop ${i}`, "Plays slice " + i + " of the sample. Recorded into loops like a drum."],
+    scene: i => [`Pad ${i}: scene ${i}`, "Tap: recall this scene at the next bar. Hold about a second: store the current mix in it."],
+    fx: (i, name) => [`Pad ${i}: ${name}`, "Perform effect, active while you hold the pad."],
+    mute: i => [`Pad ${i}: mute track ${i}`, "Mutes or unmutes that loop. Your main performance tool."],
+    undo: i => [`Pad ${i}: undo track ${i}`, "Removes the last overdub on that track (3 levels)."],
+    page: (i, name, params) => [`Pad ${i}: ${name} page`, "Knobs now control: " + params + "."],
+    cat: (i, name, hint, list) => [`Pad ${i}: ${name}`, `${hint}. Tap repeatedly to step through: ${list}.`],
+    kit: ["Pad 8: next drum kit", "Classic → 808 → 909 → Electro → Lo-Fi → Trap → Techno → Breaks → Dub → Glitch → Jazz → Percussion."],
+    knob: k => [`Knob ${k}`, "Controls parameter " + k + " of the current page."],
+    knobp: (k, name) => `Knob ${k}: ${name}`,
+    joy: ["Joystick", "Left/right bends pitch ±2 semitones. Up adds vibrato and opens the synth's filter."],
+    arp: ["ARP", "Turns the MPK's arpeggiator on. Hold a chord and it plays the notes in time with your loops."],
+    tap: ["TAP TEMPO", "Not used while mpkloop runs: the tempo comes from the loops (Global page, knob 1)."],
+    octdn: ["OCT −", "Moves the keyboard down an octave. Press both octave buttons to reset."],
+    octup: ["OCT +", "Moves the keyboard up an octave. Press both octave buttons to reset."],
+    full: ["FULL LEVEL", "Every pad hit plays at full volume until you press it again."],
+    repeat: ["NOTE REPEAT", "Hold it and hold a pad for repeated hits, locked to the loop tempo."],
+    bank: ["BANK A/B", "Switches pads between bank A (red: loops, mutes, pages) and bank B (green: drums, undo, sounds)."],
+    cc: ["CC", "Pad mode for mixing: bank A mutes tracks, bank B undoes overdubs. Press again to leave."],
+    pc: ["PROG CHANGE", "Pad mode for choosing: bank A picks the knob page, bank B picks sounds and drum kits. Press again to leave."],
+    progsel: ["PROG SELECT", "Loads one of the MPK's stored presets. Leave it alone while mpkloop runs, or restart mpkloop after switching."],
+    screen: ["Screen", "Top line: knob page and current sound. When you turn a knob it shows that knob's name and value."],
+    keys: ["Keys", "25 velocity-sensitive keys that play the current synth sound (or the sampler, after i)."],
+    sustain: ["Sustain pedal jack (back)", "A sustain pedal holds synth notes."],
+    usb: ["USB (back)", "Power and MIDI. mpkloop finds the MPK automatically."],
+    pads: ["Pads", "8 pads, 2 banks, 3 modes."], pads7: ["Pads 1–7", "Sound categories in PROG CHANGE mode, bank B."],
+  },
+  keyrows: [
+    ["space", "Start / stop playback (loops restart from the top)"],
+    ["1 … 8", "Same as tapping loop pad 1–8"], ["Shift + 1 … 8", "Mute / unmute track 1–8 (on the next beat)"],
+    ["B", "Pads and keys 1–8 work on tracks 9–16 (press again: 1–8)"], ["z + 1…8 / Z", "Solo a track / solo off"],
+    ["c + 1…8 + 1…8", "Copy a track to an empty track"], ["D + 1…8 / H + 1…8", "Double / halve a loop"], ["a + 1…8", "Name a track"],
+    ["← →", "Previous / next knob page (13 pages: the five after Global are computer-only)"],
+    ["[ ]", "Previous / next synth sound"], ["k", "Next drum kit"],
+    ["m", "What the bank B pads do: Drums → Steps → Chops → Scenes → FX"],
+    ["T / t / r", "Step sequencer on-off / grid editor / record finger drums into the pattern"],
+    ["Tab / Shift-Tab", "Step pads edit steps 9–16 / next lane"], ["( / P", "Mute the seq lane / print the pattern to an empty track"],
+    ["N + 1…8 / n + 1…8", "Store a scene / recall it at the next bar"],
+    ["x / X", "Beat repeat off → 1/4 → 1/8 → 1/16 / tape stop on-off"],
+    ["i / y + 1…8 / Y / l", "Keys play synth or sampler / take a loop into the sampler / sample the input / load a file"],
+    ["e", "Export: 1 stems, 2 MIDI, 3 both (~/Music/mpkloop/exports)"],
+    ["u", "Sound library: browse (the keys play what you point at), f favorite, n save your knob tweaks as a new sound, d delete/hide, R restore"],
+    ["o", "Session picker: demo sessions and your saved ones. ↑↓ choose, Enter plays it, g renders the demos, Esc closes"],
+    ["s", "Save the session with a name (~/Music/mpkloop/sessions)"],
+    ["b", "Start / stop recording everything you hear to a WAV (~/Music/mpkloop/bounces)"],
+    ["C C", "Clear all tracks (press twice)"], ["p", "Panic: stop stuck notes"],
+    ["L / h / q", "Open these lessons / help screen / quit (asks first if loops are unsaved)"],
+    ["mouse", "Click tracks, pads, page tabs and knob bars; scroll over a knob to nudge it. mpkloop --classic gives the old screen"],
+  ],
+  troublerows: [
+    ["Pads do nothing, or the wrong thing", "Check that CC and PROG CHANGE are both off, then check the bank, and (bank B) the pad mode shown in the status line (m cycles it). The PADS panel in mpkloop shows what the last pad press was."],
+    ["Knobs move the wrong way or jump", "Restart with <code>mpkloop --no-device-sync</code>. Knobs then pick a value up once you turn past it."],
+    ["Notes keep ringing", "Press <kbd>p</kbd>."],
+    ["Crackles or dropouts", "Restart with <code>mpkloop --block 1024</code>. Keep the step grid closed while recording; <code>--classic</code> uses the lighter old screen."],
+    ["MPK screen looks odd after mpkloop crashed", "Select the program again on the MPK (hold PROG SELECT, tap a pad). Nothing stored on the MPK is changed."],
+    ["Howling when Input Gain is up", "The mic hears the speakers. Use headphones."],
+    ["Bank B pads don't play drums", "Press <kbd>m</kbd> until the status line says <b>pad B: Drums</b>."],
+    ["Export says no MIDI", "Only notes played after this update are captured. Record or overdub a loop again."],
+    ["\"Connect MPK\" on this page does nothing", "Web MIDI needs Chrome, Edge or Opera, and some embedded viewers block it. Open the local copy <code>~/Projects/mpkloop/lessons.html</code> in Chrome (or press <kbd>L</kbd> in mpkloop). mpkloop can stay running; both receive the MPK."],
+  ],
+ },
+ nl: {
+  eyebrow: "Akai MPK mini 3 · mpkloop", h1: "Leer loopen op je MPK&nbsp;mini",
+  lede: "Vier lessen: eerst de controller leren kennen, dan drie liedjes maken. Elk liedje gebruikt meer van mpkloop, en elke stap laat precies zien wat je indrukt. Doe het op de tekening door te klikken, of op de echte MPK: sluit hem aan en de pagina vinkt elke handeling af terwijl je hem doet.",
+  tape: "START: typ <b>mpkloop</b> in een terminal", toc_lessons: "Lessen", toc_all: "Alle stappen", toc_sounds: "Klankbibliotheek",
+  toc_keys: "Computertoetsen", toc_trouble: "Problemen", mode_lessons: "Lessen", mode_explore: "Vrij verkennen",
+  leg_todo: "te doen", leg_done: "klaar",
+  note: "Elke knop draagt de naam die op je MPK staat; de posities van de kleine knopjes zijn bij benadering. Gebruik ← → op je toetsenbord om tussen stappen te bewegen.",
+  all_h2: "Alle lessen in één oogopslag", all_intro: "Klik op een stap om die op de controller hierboven te openen. Afgeronde stappen zijn afgevinkt.",
+  sounds_h2: "Klankbibliotheek",
+  sounds_intro: "102 synthklanken in 7 categorieën, plus 12 drumkits, en je kunt je eigen klanken toevoegen. Kies ze met <b>PROG CHANGE</b> aan en <b>bank B</b>: pads 1–7 zijn de categorieën (tik dezelfde pad nog eens voor de volgende klank erin) en pad 8 wisselt van drumkit. Op de computer: <kbd>[</kbd> <kbd>]</kbd> lopen door de klanken, <kbd>k</kbd> wisselt de kit, <kbd>u</kbd> opent het bibliotheekscherm (favorieten ★ komen eerst op de pads).",
+  kits_h3: "Drumkits", kits_intro: "Bank B-pads in de normale stand. Onderste rij is pad 1–4, bovenste rij pad 5–8.",
+  keys_h2: "Computertoetsen", trouble_h2: "Als er iets raars gebeurt",
+  th_key: "Toets", th_does: "Doet", th_see: "Wat je ziet", th_fix: "Oplossing", th_kit: "Kit", pad: "Pad",
+  connect: "MPK verbinden", connect_chrome: "MPK verbinden (vereist Chrome)", no_webmidi: "Geen Web MIDI in deze browser",
+  webmidi_hint: "Web MIDI vereist Chrome, Edge of Opera. Zie Problemen.", no_device: "Geen MIDI-apparaat gevonden: sluit de MPK aan",
+  connected: "MPK verbonden", listening: "luistert", blocked: "MIDI hier geblokkeerd: open lessons.html in Chrome",
+  blocked_hint: "Web MIDI werd hier geweigerd. Open de lokale kopie in Chrome (zie Problemen).",
+  reset: "Voortgang wissen", lesson: "Les", step: "stap", of: "van", your_moves: "Jouw handelingen",
+  comp_tip: "Deze stap gebeurt in het mpkloop-venster. Druk op <b>Klaar</b> als je het hebt geprobeerd.",
+  on_computer: "Op je computer", on_computer_d: "Deze stap gebeurt in het mpkloop-venster, niet op de MPK.",
+  what_this_does: "Wat dit doet", explore: "Verkennen", pads_state: (bank, mode, page) => `Pads: bank ${bank} · ${mode} · knoppen: pagina ${page}`,
+  mode_normal: "normaal", back: "← Terug", next: "Volgende →", next_lesson: "Volgende les →", all_done: "Alles klaar 🎉", skip: "Overslaan →", done_next: "Klaar, volgende →",
+  done: "klaar", do_midi: "doe het op de MPK, of klik het op de tekening", do_click: "klik het op de tekening, of druk op MPK verbinden en doe het echt",
+  n_of_m: (n, m) => `${n} van ${m} klaar`, done_midi: "Gedaan op de MPK ✓", done_step: "Stap klaar ✓",
+  thats: (h, next, label) => `Dat is ${h}. Volgende: ${next} (${label})`,
+  explore_h: "Gebruik de tekening als je MPK",
+  explore_b: `<p>Klik op <b>BANK A/B</b>, <b>CC</b> en <b>PROG CHANGE</b> om van padstand te wisselen, net als op de controller. In de stand PROG CHANGE verandert klikken op pads de knoppenpagina (bank A) of de klank en drumkit (bank B).</p><p>Klik op een pad, knop of toets om te zien wat die doet in de huidige stand. Met de MPK verbonden volgt de tekening wat je echt indrukt.</p>`,
+  back_lessons: "← Terug naar de lessen", pick: "Kies een bediening", pick_d: "Klik op iets in de tekening, of druk het in op je MPK.",
+  page_word: "pagina", kit_word: "Kit", padtag: "PROG CHANGE · BANK B · PAD",
+  d: {
+    loop: i => [`Pad ${i}: looptrack ${i}`, "Tik om op te nemen, tik nog eens om de loop te sluiten. Tik op een spelende loop om te overdubben, tik nog eens om te stoppen. Houd ongeveer een seconde vast om te wissen."],
+    drum: (i, name, kit) => [`Pad ${i}: ${name}`, `Drum uit de kit ${kit}. Harder slaan is harder; na de slag drukken veegt het mixfilter.`],
+    step: i => [`Pad ${i}: stap ${i}`, "Zet stap " + i + " (of " + (i + 8) + " na Tab) van de gekozen sequencerlaan aan of uit."],
+    chop: i => [`Pad ${i}: chop ${i}`, "Speelt stukje " + i + " van de sample. Wordt in loops opgenomen zoals een drum."],
+    scene: i => [`Pad ${i}: scene ${i}`, "Tik: roep deze scene op bij de volgende maat. Ongeveer een seconde vasthouden: sla de huidige mix erin op."],
+    fx: (i, name) => [`Pad ${i}: ${name}`, "Performance-effect, actief zolang je de pad vasthoudt."],
+    mute: i => [`Pad ${i}: track ${i} dempen`, "Dempt die loop of haalt de demping weg. Je belangrijkste performancemiddel."],
+    undo: i => [`Pad ${i}: undo track ${i}`, "Verwijdert de laatste overdub van die track (3 niveaus)."],
+    page: (i, name, params) => [`Pad ${i}: pagina ${name}`, "De knoppen regelen nu: " + params + "."],
+    cat: (i, name, hint, list) => [`Pad ${i}: ${name}`, `${hint}. Tik herhaaldelijk om door te lopen: ${list}.`],
+    kit: ["Pad 8: volgende drumkit", "Classic → 808 → 909 → Electro → Lo-Fi → Trap → Techno → Breaks → Dub → Glitch → Jazz → Percussion."],
+    knob: k => [`Knop ${k}`, "Regelt parameter " + k + " van de huidige pagina."],
+    knobp: (k, name) => `Knop ${k}: ${name}`,
+    joy: ["Joystick", "Links/rechts buigt de toonhoogte ±2 halve tonen. Omhoog geeft vibrato en opent het filter van de synth."],
+    arp: ["ARP", "Zet de arpeggiator van de MPK aan. Houd een akkoord vast en hij speelt de noten in de maat van je loops."],
+    tap: ["TAP TEMPO", "Niet gebruikt terwijl mpkloop draait: het tempo komt van de loops (pagina Global, knop 1)."],
+    octdn: ["OCT −", "Schuift het klavier een octaaf omlaag. Druk beide octaafknoppen tegelijk om terug te zetten."],
+    octup: ["OCT +", "Schuift het klavier een octaaf omhoog. Druk beide octaafknoppen tegelijk om terug te zetten."],
+    full: ["FULL LEVEL", "Elke padslag klinkt op vol volume tot je er nog eens op drukt."],
+    repeat: ["NOTE REPEAT", "Houd vast en houd een pad vast voor herhaalde slagen, vast aan het looptempo."],
+    bank: ["BANK A/B", "Wisselt de pads tussen bank A (rood: loops, dempen, pagina's) en bank B (groen: drums, undo, klanken)."],
+    cc: ["CC", "Padstand om te mixen: bank A dempt tracks, bank B maakt overdubs ongedaan. Nog eens drukken om te verlaten."],
+    pc: ["PROG CHANGE", "Padstand om te kiezen: bank A kiest de knoppenpagina, bank B kiest klanken en drumkits. Nog eens drukken om te verlaten."],
+    progsel: ["PROG SELECT", "Laadt een van de opgeslagen presets van de MPK. Laat hem met rust terwijl mpkloop draait, of herstart mpkloop na het wisselen."],
+    screen: ["Scherm", "Bovenste regel: knoppenpagina en huidige klank. Draai je aan een knop, dan toont het de naam en waarde van die knop."],
+    keys: ["Toetsen", "25 aanslaggevoelige toetsen die de huidige synthklank spelen (of de sampler, na i)."],
+    sustain: ["Aansluiting sustainpedaal (achterkant)", "Een sustainpedaal houdt synthnoten vast."],
+    usb: ["USB (achterkant)", "Voeding en MIDI. mpkloop vindt de MPK vanzelf."],
+    pads: ["Pads", "8 pads, 2 banken, 3 standen."], pads7: ["Pads 1–7", "Klankcategorieën in de stand PROG CHANGE, bank B."],
+  },
+  keyrows: [
+    ["spatie", "Afspelen starten / stoppen (loops beginnen weer vooraan)"],
+    ["1 … 8", "Hetzelfde als looppad 1–8 tikken"], ["Shift + 1 … 8", "Track 1–8 dempen / weer aan (bij de volgende tel)"],
+    ["B", "Pads en toetsen 1–8 werken op track 9–16 (nog eens: 1–8)"], ["z + 1…8 / Z", "Een track solo / solo uit"],
+    ["c + 1…8 + 1…8", "Een track naar een lege track kopiëren"], ["D + 1…8 / H + 1…8", "Een loop verdubbelen / halveren"], ["a + 1…8", "Een track een naam geven"],
+    ["← →", "Vorige / volgende knoppenpagina (13 pagina's: de vijf na Global zijn alleen via de computer)"],
+    ["[ ]", "Vorige / volgende synthklank"], ["k", "Volgende drumkit"],
+    ["m", "Wat de bank B-pads doen: Drums → Steps → Chops → Scenes → FX"],
+    ["T / t / r", "Stepsequencer aan-uit / rasterbewerker / vingerdrums in het patroon opnemen"],
+    ["Tab / Shift-Tab", "Steppads bewerken stap 9–16 / volgende laan"], ["( / P", "Sequencerlaan dempen / patroon naar een lege track afdrukken"],
+    ["N + 1…8 / n + 1…8", "Een scene opslaan / oproepen bij de volgende maat"],
+    ["x / X", "Beat repeat uit → 1/4 → 1/8 → 1/16 / tape stop aan-uit"],
+    ["i / y + 1…8 / Y / l", "Toetsen spelen synth of sampler / een loop in de sampler laden / de ingang samplen / een bestand laden"],
+    ["e", "Exporteren: 1 stems, 2 MIDI, 3 beide (~/Music/mpkloop/exports)"],
+    ["u", "Klankbibliotheek: bladeren (de toetsen spelen wat je aanwijst), f favoriet, n sla je knoppenstand op als nieuwe klank, d wissen/verbergen, R herstellen"],
+    ["o", "Sessiekiezer: demosessies en je opgeslagen sessies. ↑↓ kiezen, Enter speelt af, g rendert de demo's, Esc sluit"],
+    ["s", "De sessie opslaan onder een naam (~/Music/mpkloop/sessions)"],
+    ["b", "Alles wat je hoort opnemen naar een WAV starten / stoppen (~/Music/mpkloop/bounces)"],
+    ["C C", "Alle tracks wissen (twee keer drukken)"], ["p", "Paniek: hangende noten stoppen"],
+    ["L / h / q", "Deze lessen openen / helpscherm / afsluiten (vraagt eerst als loops niet zijn opgeslagen)"],
+    ["muis", "Klik op tracks, pads, paginatabs en knopbalken; scroll boven een knop om hem te verdraaien. mpkloop --classic geeft het oude scherm"],
+  ],
+  troublerows: [
+    ["Pads doen niets, of het verkeerde", "Controleer dat CC en PROG CHANGE beide uit staan, dan de bank, en (bank B) de padstand in de statusregel (m wisselt die). Het paneel PADS in mpkloop toont wat de laatste paddruk was."],
+    ["Knoppen draaien verkeerd of springen", "Herstart met <code>mpkloop --no-device-sync</code>. Knoppen pakken een waarde dan op zodra je er voorbij draait."],
+    ["Noten blijven klinken", "Druk op <kbd>p</kbd>."],
+    ["Kraken of haperingen", "Herstart met <code>mpkloop --block 1024</code>. Houd het stepraster dicht tijdens het opnemen; <code>--classic</code> gebruikt het lichtere oude scherm."],
+    ["MPK-scherm ziet er raar uit na een crash van mpkloop", "Kies het programma opnieuw op de MPK (PROG SELECT vasthouden, een pad tikken). Er wordt niets op de MPK zelf veranderd."],
+    ["Gehuil als Input Gain open staat", "De microfoon hoort de luidsprekers. Gebruik een koptelefoon."],
+    ["Bank B-pads spelen geen drums", "Druk op <kbd>m</kbd> tot de statusregel <b>pad B: Drums</b> zegt."],
+    ["Export zegt geen MIDI", "Alleen noten die na deze update zijn gespeeld worden vastgelegd. Neem een loop opnieuw op of overdub hem."],
+    ["\"MPK verbinden\" op deze pagina doet niets", "Web MIDI vereist Chrome, Edge of Opera, en sommige ingebedde weergaven blokkeren het. Open de lokale kopie <code>~/Projects/mpkloop/lessons.html</code> in Chrome (of druk op <kbd>L</kbd> in mpkloop). mpkloop kan blijven draaien; beide ontvangen de MPK."],
+  ],
+ },
+};
+
+// ------------------------------------------------------------------ lessons
+// st: bank A|B, mode note|cc|pc, padb Drums|Steps|Chops|Scenes|FX (bank B pads), page, sound, kit, line (2nd screen line)
+// hl: tasks [control, label].  keys: semitones to light.  tr: mpkloop track states {1:"play"}.  comp: computer-only step
+const T = (a, b) => ({ 1: a, 2: b });
+const LESSONS = {
+en: [
+ {
+  "t": "Meet your MPK",
+  "steps": [
+   {
+    "t": "Start mpkloop",
+    "hl": [],
+    "b": "<p>Plug in the MPK with the USB cable. Open a terminal and type <code>mpkloop</code>, then press Enter. You see a big table with 16 <b>tracks</b>. Each track can hold one loop: a short piece of music that repeats.</p><p class=\"tip\">Press <kbd>L</kbd> in mpkloop to open this page. Click <b>Connect MPK</b> at the top and the page will see what you press on the real MPK.</p>",
+    "st": {
+     "line": "mpkloop ready"
+    },
+    "comp": true
+   },
+   {
+    "t": "The keys play a sound",
+    "hl": [
+     [
+      "keys",
+      "PLAY"
+     ]
+    ],
+    "b": "<p>Play some keys. Press harder and the note is louder. Play two or three keys together for a chord.</p>",
+    "keys": [
+     0,
+     4,
+     7
+    ]
+   },
+   {
+    "t": "OCT − and OCT +",
+    "hl": [
+     [
+      "octdn",
+      "PRESS"
+     ],
+     [
+      "octup",
+      "PRESS"
+     ]
+    ],
+    "b": "<p>These two buttons move the keys lower or higher. Low notes are for bass, high notes for melodies. Press both at once to go back to the middle.</p>"
+   },
+   {
+    "t": "The joystick",
+    "hl": [
+     [
+      "joy",
+      "MOVE"
+     ]
+    ],
+    "b": "<p>Push it <b>left</b> or <b>right</b> while you hold a note: the note bends. Push it <b>up</b>: the note wobbles and gets brighter.</p>",
+    "joy": true
+   },
+   {
+    "t": "The pads have two banks",
+    "hl": [
+     [
+      "bank",
+      "PRESS"
+     ],
+     [
+      "pad1",
+      "TAP"
+     ]
+    ],
+    "b": "<p>The <b>BANK A/B</b> button switches the 8 pads between:</p><ul><li><b>Bank A</b> (red light): your <b>loop tracks</b>.</li><li><b>Bank B</b> (green light): the <b>drums</b>.</li></ul><p>Pads 1–4 are the bottom row, 5–8 the top row. Press BANK A/B now and tap a pad to see it on the screen.</p>",
+    "st": {
+     "bank": "B"
+    }
+   },
+   {
+    "t": "Hit the drums",
+    "hl": [
+     [
+      "pad1",
+      "KICK"
+     ],
+     [
+      "pad2",
+      "SNARE"
+     ],
+     [
+      "pad3",
+      "HAT"
+     ]
+    ],
+    "b": "<p>On bank B, hit the pads. Pad 1 is the kick, 2 the snare, 3 the hi-hat, 4 the open hi-hat. The top row has a clap and more. Hit softer and harder.</p>",
+    "st": {
+     "bank": "B"
+    }
+   },
+   {
+    "t": "The knobs",
+    "hl": [
+     [
+      "k1",
+      "TURN"
+     ]
+    ],
+    "b": "<p>The 8 knobs change settings. Which ones depends on the <b>page</b>. On the Volume page, knob 1 is the volume of track 1, knob 2 of track 2, and so on. Turn one and its name shows on the MPK's little screen.</p>",
+    "st": {
+     "page": 0
+    }
+   },
+   {
+    "t": "Two special buttons",
+    "hl": [
+     [
+      "cc",
+      "LOOK"
+     ],
+     [
+      "pc",
+      "LOOK"
+     ]
+    ],
+    "b": "<p><b>CC</b> and <b>PROG CHANGE</b> give the pads a different job for a moment. You'll use them in the songs. Press the same button again to get normal pads back.</p><p class=\"tip\">Don't press <b>PROG SELECT</b> while mpkloop runs.</p>"
+   }
+  ]
+ },
+ {
+  "t": "Song 1: a beat, a bass and chords",
+  "steps": [
+   {
+    "t": "Pick a drum kit",
+    "hl": [
+     [
+      "pc",
+      "PRESS"
+     ],
+     [
+      "bank",
+      "BANK B"
+     ],
+     [
+      "pad8",
+      "TAP"
+     ]
+    ],
+    "b": "<p>Press <b>PROG CHANGE</b>, go to <b>bank B</b> and tap <b>pad 8</b>. Every tap gives the next drum kit: Classic, 808, 909, Electro… Pick one you like, then press PROG CHANGE again to leave.</p>",
+    "st": {
+     "mode": "pc",
+     "bank": "B",
+     "kit": 1,
+     "line": "Drum kit: 808"
+    }
+   },
+   {
+    "t": "Record your beat on track 1",
+    "hl": [
+     [
+      "pad1",
+      "TAP"
+     ],
+     [
+      "bank",
+      "BANK B"
+     ],
+     [
+      "pad1",
+      "TAP AGAIN"
+     ]
+    ],
+    "b": "<p>Go to <b>bank A</b> and tap <b>pad 1</b>. You hear 4 clicks: that's the count-in. Then switch to <b>bank B</b> and play a beat: kick, hat, snare, hat… Keep it simple.</p><p>After 1 bar (4 beats) or 2 bars, switch back to bank A and tap <b>pad 1</b> again. Your beat now repeats. That's a loop!</p><p class=\"tip\">Made a mess? Hold pad 1 for a second: the track is cleared and you can try again.</p>",
+    "st": {
+     "bank": "A",
+     "line": "T1: loop 1 bar"
+    },
+    "tr": {
+     "1": "play"
+    }
+   },
+   {
+    "t": "Choose a bass sound",
+    "hl": [
+     [
+      "pc",
+      "PRESS"
+     ],
+     [
+      "pad3",
+      "TAP"
+     ],
+     [
+      "octdn",
+      "PRESS"
+     ]
+    ],
+    "b": "<p>Press <b>PROG CHANGE</b>, bank B, tap <b>pad 3: Bass</b>. Tap it again for the next bass sound. Press PROG CHANGE to leave, then press <b>OCT −</b> once so the keys play low.</p>",
+    "st": {
+     "mode": "pc",
+     "bank": "B",
+     "sound": "Sub Bass"
+    }
+   },
+   {
+    "t": "Record the bass on track 2",
+    "hl": [
+     [
+      "pad2",
+      "TAP"
+     ],
+     [
+      "keys",
+      "PLAY"
+     ],
+     [
+      "pad2",
+      "TAP AGAIN"
+     ]
+    ],
+    "b": "<p>Bank A, tap <b>pad 2</b>. Recording starts at the next bar, so you have a moment. Play a few low notes on the keys that fit your beat. Tap pad 2 again to close the loop.</p><p class=\"tip\">The loop closes at the end of a bar, so you don't have to tap at the exact moment.</p>",
+    "st": {
+     "bank": "A",
+     "sound": "Sub Bass",
+     "line": "T2: loop 1 bar"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play"
+    },
+    "keys": [
+     0,
+     7
+    ]
+   },
+   {
+    "t": "Add chords on track 3",
+    "hl": [
+     [
+      "pc",
+      "PRESS"
+     ],
+     [
+      "pad2",
+      "TAP"
+     ],
+     [
+      "octup",
+      "PRESS"
+     ],
+     [
+      "pad3",
+      "TAP"
+     ]
+    ],
+    "b": "<p>PROG CHANGE, bank B, tap <b>pad 1: Pads</b> or <b>pad 2: Keys</b> for a chord sound. Leave PROG CHANGE, press <b>OCT +</b> to come back up. Bank A, tap <b>pad 3</b>, play two or three chords, tap pad 3 again.</p>",
+    "st": {
+     "bank": "A",
+     "sound": "E-Piano",
+     "line": "T3: loop 2 bars"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play",
+     "3": "play"
+    },
+    "keys": [
+     0,
+     4,
+     7
+    ]
+   },
+   {
+    "t": "Take parts out and in",
+    "hl": [
+     [
+      "cc",
+      "PRESS"
+     ],
+     [
+      "pad1",
+      "TAP"
+     ],
+     [
+      "pad1",
+      "TAP AGAIN"
+     ]
+    ],
+    "b": "<p>Press <b>CC</b>. Now bank A pads <b>mute</b> tracks: tap pad 1 and the beat stops at the next beat; tap again and it's back. Try playing with just the chords, then bring the beat in. Press CC again to leave.</p>",
+    "st": {
+     "mode": "cc",
+     "bank": "A"
+    },
+    "tr": {
+     "1": "mute",
+     "2": "play",
+     "3": "play"
+    }
+   },
+   {
+    "t": "Make it louder or softer",
+    "hl": [
+     [
+      "pc",
+      "PRESS"
+     ],
+     [
+      "pad1",
+      "TAP"
+     ],
+     [
+      "k2",
+      "TURN"
+     ],
+     [
+      "k3",
+      "TURN"
+     ]
+    ],
+    "b": "<p>Press PROG CHANGE, <b>bank A</b>, tap <b>pad 1: Volume</b>, press PROG CHANGE again. Now knob 1 is the volume of track 1, knob 2 of track 2, knob 3 of track 3. Turn them until the beat, bass and chords sound good together.</p>",
+    "st": {
+     "mode": "pc",
+     "bank": "A",
+     "page": 0
+    }
+   },
+   {
+    "t": "Play over the top",
+    "hl": [
+     [
+      "keys",
+      "PLAY"
+     ]
+    ],
+    "b": "<p>Pick a sound you like (Leads on pad 4 are good for melodies). Play along with your loops. Nothing is recorded now, so just have fun. Want to keep a melody? Tap <b>pad 4</b>, play it, tap again.</p>",
+    "st": {
+     "bank": "A",
+     "sound": "Saw Lead"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play",
+     "3": "play"
+    },
+    "keys": [
+     12,
+     14,
+     16,
+     19
+    ]
+   },
+   {
+    "t": "Save your song",
+    "hl": [],
+    "b": "<p>On the computer press <kbd>s</kbd>, type a name like <i>my first song</i> and press Enter. Press <kbd>o</kbd> any time to open it again. Press <kbd>space</kbd> to stop and start playing.</p><p class=\"tip\">Song 1 done! You used: tracks, drum pads, sounds, mute, volume and save.</p>",
+    "st": {
+     "line": "Saved 'my first song'"
+    },
+    "comp": true
+   }
+  ]
+ },
+ {
+  "t": "Song 2: the step sequencer, effects and scenes",
+  "steps": [
+   {
+    "t": "Start empty",
+    "hl": [],
+    "b": "<p>Press <kbd>C</kbd> twice on the computer to clear all tracks (save first if you want to keep Song 1). For this song, the computer makes the beat and you play on top.</p>",
+    "st": {
+     "line": "All tracks cleared"
+    },
+    "comp": true
+   },
+   {
+    "t": "Open the step grid",
+    "hl": [],
+    "b": "<p>Press <kbd>t</kbd>. You see a grid: 8 rows (kick, snare, hat…) and 16 steps. One row of 16 steps is one bar. Use the arrow keys to move and <kbd>space</kbd> to turn a step on. Put the kick on steps 1, 5, 9, 13 and the snare on 5 and 13. Press <kbd>T</kbd> to hear it. Press <kbd>t</kbd> to close the grid.</p><p class=\"tip\">With the mouse: click a step. Right-click makes a step louder or softer.</p>",
+    "st": {
+     "line": "Step sequencer on"
+    },
+    "comp": true
+   },
+   {
+    "t": "Draw steps with the pads",
+    "hl": [
+     [
+      "pad1",
+      "TAP"
+     ],
+     [
+      "pad3",
+      "TAP"
+     ],
+     [
+      "pad5",
+      "TAP"
+     ]
+    ],
+    "b": "<p>Press <kbd>m</kbd> until the status line says <b>pad B: Steps</b>. Now the bank B pads turn steps 1–8 on and off for one drum. <kbd>Tab</kbd> switches to steps 9–16, <kbd>Shift-Tab</kbd> picks the next drum. Add some hi-hats. Press <kbd>m</kbd> until it says <b>Drums</b> again when you're done.</p>",
+    "st": {
+     "bank": "B",
+     "padb": "Steps",
+     "line": "Bank B pads: Steps"
+    }
+   },
+   {
+    "t": "Swing and a different kit",
+    "hl": [
+     [
+      "k2",
+      "SWING"
+     ],
+     [
+      "k4",
+      "KIT"
+     ]
+    ],
+    "b": "<p>Press <kbd>→</kbd> until the knob page says <b>SEQ</b>. Knob 2 is <b>Swing</b>: turn it up and the beat starts to bounce. Knob 4 picks the <b>kit</b>. Knob 5 is the beat's volume.</p>",
+    "st": {
+     "page": 11,
+     "line": "Knob page: SEQ"
+    }
+   },
+   {
+    "t": "Record the bass and chords",
+    "hl": [
+     [
+      "pad1",
+      "TAP"
+     ],
+     [
+      "keys",
+      "PLAY"
+     ],
+     [
+      "pad2",
+      "TAP"
+     ]
+    ],
+    "b": "<p>Like in Song 1: pick a bass sound (PROG CHANGE, bank B, pad 3), tap <b>pad 1</b> on bank A, play, tap again. Then chords on <b>pad 2</b>. The sequencer keeps playing underneath and is never recorded into your loops.</p>",
+    "st": {
+     "bank": "A",
+     "sound": "Pluck Bass"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play"
+    },
+    "keys": [
+     0,
+     3,
+     7
+    ]
+   },
+   {
+    "t": "Give your tracks names",
+    "hl": [],
+    "b": "<p>Press <kbd>a</kbd> then <kbd>1</kbd>, type <i>Bass</i>, Enter. Press <kbd>a</kbd> <kbd>2</kbd>, type <i>Chords</i>. The names show in the table so you always know what's where.</p>",
+    "st": {
+     "line": "Name track: press 1-8"
+    },
+    "comp": true
+   },
+   {
+    "t": "Copy a track and make it longer",
+    "hl": [
+     [
+      "pad3",
+      "TAP"
+     ]
+    ],
+    "b": "<p>Press <kbd>c</kbd> <kbd>2</kbd> <kbd>3</kbd>: the chords are copied to track 3. Press <kbd>D</kbd> <kbd>3</kbd>: track 3 is now twice as long. Now tap <b>pad 3</b> (overdub) and play a second chord part only in the second half. Tap pad 3 again. Mute track 2 with CC to hear just the new one.</p>",
+    "st": {
+     "bank": "A",
+     "line": "T3: loop is now 4 bars"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play",
+     "3": "odub"
+    }
+   },
+   {
+    "t": "An effect on a track",
+    "hl": [
+     [
+      "k2",
+      "EFFECT"
+     ]
+    ],
+    "b": "<p>Press <kbd>→</kbd> to the <b>TRACK FX</b> page. Knob 2 picks an effect for track 2: Crush, Drive, Chorus, Tape or Comb. Then <kbd>→</kbd> to <b>FX AMOUNT</b> and turn knob 2 up. Chorus on chords sounds wide; Crush on a bass sounds like an old video game.</p>",
+    "st": {
+     "page": 8,
+     "line": "Knob page: TRACK FX"
+    }
+   },
+   {
+    "t": "Duck: the pumping sound",
+    "hl": [
+     [
+      "k2",
+      "DUCK"
+     ]
+    ],
+    "b": "<p><kbd>→</kbd> to the <b>DUCK</b> page. Turn knob 2 halfway. Now the chords dip a little every time the kick hits. That pumping is used in a lot of dance music.</p>",
+    "st": {
+     "page": 10,
+     "line": "Knob page: DUCK"
+    }
+   },
+   {
+    "t": "Store two scenes",
+    "hl": [],
+    "b": "<p>A scene remembers all your volumes, mutes and effects. Make a quiet version (mute the bass, turn the chords down) and press <kbd>N</kbd> <kbd>1</kbd>. Make a full version and press <kbd>N</kbd> <kbd>2</kbd>. Now <kbd>n</kbd> <kbd>1</kbd> and <kbd>n</kbd> <kbd>2</kbd> switch between them at the next bar.</p><p class=\"tip\">On the MPK: press <kbd>m</kbd> until it says <b>Scenes</b>. Then tapping a bank B pad recalls that scene, and holding it stores one.</p>",
+    "st": {
+     "line": "Scene 2 at the next bar"
+    },
+    "comp": true
+   },
+   {
+    "t": "Record a whole performance",
+    "hl": [],
+    "b": "<p>Press <kbd>b</kbd>. Everything you hear is now recorded to a WAV file. Switch between your scenes, mute things, play a melody. Press <kbd>b</kbd> again to stop. The file is in <code>~/Music/mpkloop/bounces/</code>. Press <kbd>s</kbd> to save the session too.</p><p class=\"tip\">Song 2 done! New: step sequencer, swing, names, copy, double, effects, duck, scenes, bounce.</p>",
+    "st": {
+     "line": "Bounce saved"
+    },
+    "comp": true
+   }
+  ]
+ },
+ {
+  "t": "Song 3: your own sounds, the sampler and a live show",
+  "steps": [
+   {
+    "t": "Find your favorite sounds",
+    "hl": [],
+    "b": "<p>Press <kbd>u</kbd>. This is the sound library. Move with <kbd>↑</kbd> <kbd>↓</kbd> and play the keys: you hear the sound you're pointing at. Press <kbd>f</kbd> on the ones you love: they get a ★ and come <b>first</b> when you tap that category pad on the MPK. <kbd>Esc</kbd> closes it.</p>",
+    "st": {
+     "line": "★ Favorite: Hoover"
+    },
+    "comp": true
+   },
+   {
+    "t": "Make your own sound",
+    "hl": [
+     [
+      "k1",
+      "CUTOFF"
+     ],
+     [
+      "k2",
+      "RESONANCE"
+     ],
+     [
+      "k4",
+      "RELEASE"
+     ]
+    ],
+    "b": "<p>Pick a sound. Go to the <b>SOUND</b> page (PROG CHANGE, bank A, pad 7). Knob 1 makes it darker or brighter, knob 2 makes it squeal, knob 3 makes notes start slowly, knob 4 makes them ring longer. Like it? Press <kbd>u</kbd>, then <kbd>n</kbd>, type a name. It's now in the library with your name on it.</p>",
+    "st": {
+     "page": 6,
+     "sound": "Acid",
+     "line": "Saved sound 'My Acid' to the library"
+    }
+   },
+   {
+    "t": "Record a beat and chop it up",
+    "hl": [
+     [
+      "pad1",
+      "TAP"
+     ],
+     [
+      "pad3",
+      "TAP"
+     ],
+     [
+      "pad2",
+      "TAP"
+     ]
+    ],
+    "b": "<p>Record a beat on track 1 as in Song 1. Then press <kbd>y</kbd> <kbd>1</kbd>: the loop is copied into the <b>sampler</b> and cut into 8 pieces. Press <kbd>m</kbd> until the status line says <b>Chops</b>. Now the bank B pads play the 8 pieces. Play them in a new order!</p>",
+    "st": {
+     "bank": "B",
+     "padb": "Chops",
+     "line": "Sampler: took the loop of T1"
+    },
+    "tr": {
+     "1": "play"
+    }
+   },
+   {
+    "t": "Record the chopped beat",
+    "hl": [
+     [
+      "pad2",
+      "TAP"
+     ],
+     [
+      "bank",
+      "BANK B"
+     ]
+    ],
+    "b": "<p>Mute track 1 (CC + pad 1). Bank A, tap <b>pad 2</b>, play your chops on bank B, tap pad 2 again. Now you have a new beat made from the old one. Try the <b>SAMPLER</b> page (<kbd>→</kbd> to the end): knob 1 changes the pitch, knob 8 plays it backwards.</p>",
+    "st": {
+     "bank": "A",
+     "padb": "Chops"
+    },
+    "tr": {
+     "1": "mute",
+     "2": "play"
+    }
+   },
+   {
+    "t": "Sample your own voice",
+    "hl": [
+     [
+      "k4",
+      "INPUT GAIN"
+     ],
+     [
+      "keys",
+      "PLAY"
+     ]
+    ],
+    "b": "<p>Go to the <b>GLOBAL</b> page and turn knob 4 (<b>Input Gain</b>) up a little. Use headphones, or it howls! Press <kbd>Y</kbd>, say or sing something, press <kbd>Y</kbd> again. Press <kbd>i</kbd>: now the keys play your voice, high and low. Chops play pieces of it.</p>",
+    "st": {
+     "page": 7,
+     "line": "Sampler: recorded 2.3 s"
+    },
+    "keys": [
+     0,
+     5,
+     7
+    ]
+   },
+   {
+    "t": "Arpeggiator and Note Repeat",
+    "hl": [
+     [
+      "arp",
+      "PRESS"
+     ],
+     [
+      "keys",
+      "HOLD CHORD"
+     ],
+     [
+      "repeat",
+      "HOLD"
+     ],
+     [
+      "pad3",
+      "HOLD"
+     ]
+    ],
+    "b": "<p>Press <b>ARP</b> on the MPK and hold a chord: the notes play one after another, in time with your loops. Hold <b>NOTE REPEAT</b> and hold a drum pad: a fast roll, also in time. Record either one into a track.</p>",
+    "st": {
+     "bank": "B"
+    },
+    "keys": [
+     0,
+     4,
+     7
+    ]
+   },
+   {
+    "t": "More than 8 tracks",
+    "hl": [
+     [
+      "pad1",
+      "TAP"
+     ]
+    ],
+    "b": "<p>Press <kbd>B</kbd>. The top line now says <b>pads: T9-16</b>: the pads and keys 1–8 work on tracks 9 to 16. Record something on pad 1: it lands on track 9. Press <kbd>B</kbd> again to go back to tracks 1–8.</p>",
+    "st": {
+     "bank": "A",
+     "line": "Pads and keys 1-8 now address tracks 9-16"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play"
+    }
+   },
+   {
+    "t": "Solo",
+    "hl": [],
+    "b": "<p>Press <kbd>z</kbd> <kbd>2</kbd>: you hear only track 2. Good for checking one part. Press <kbd>Z</kbd> and everything comes back.</p>",
+    "st": {
+     "line": "T2: solo on"
+    },
+    "comp": true
+   },
+   {
+    "t": "Live effects",
+    "hl": [
+     [
+      "pad2",
+      "HOLD"
+     ],
+     [
+      "pad5",
+      "HOLD"
+     ],
+     [
+      "pad6",
+      "HOLD"
+     ]
+    ],
+    "b": "<p>Press <kbd>m</kbd> until it says <b>FX</b>. Now the bank B pads are effects while you <b>hold</b> them: pads 1–4 repeat a small piece (stutter), pad 5 slows everything down like a tape, pad 6 plays everything backwards, pad 8 crushes the sound. Let go and the music snaps back in time.</p>",
+    "st": {
+     "bank": "B",
+     "padb": "FX",
+     "line": "Bank B pads: FX"
+    }
+   },
+   {
+    "t": "Free tempo",
+    "hl": [
+     [
+      "k2",
+      "REC MODE"
+     ],
+     [
+      "pad1",
+      "TAP"
+     ],
+     [
+      "pad1",
+      "TAP AGAIN"
+     ]
+    ],
+    "b": "<p>Clear everything (<kbd>C</kbd> <kbd>C</kbd>). On the GLOBAL page set knob 2 (<b>Rec Mode</b>) to <b>Free→Tempo</b>. Tap pad 1 and start playing right away, no count-in. Tap pad 1 exactly when your loop should end. mpkloop works out the tempo from your loop.</p>",
+    "st": {
+     "page": 7,
+     "line": "Tempo set from loop: 92.4 BPM (2 bars)"
+    }
+   },
+   {
+    "t": "Export your song",
+    "hl": [],
+    "b": "<p>Press <kbd>e</kbd>, then <kbd>3</kbd>. mpkloop writes a WAV file per track, a mix, and a MIDI file with the notes you played, to <code>~/Music/mpkloop/exports/</code>. You can open those in any music program and keep working there.</p><p class=\"tip\">Song 3 done! You now know every feature. Make something nobody has heard before.</p>",
+    "st": {
+     "line": "Exported: stems 4 bars, 5 MIDI tracks"
+    },
+    "comp": true
+   }
+  ]
+ }
+],
+nl: [
+ {
+  "t": "Maak kennis met je MPK",
+  "steps": [
+   {
+    "t": "Start mpkloop",
+    "hl": [],
+    "b": "<p>Sluit de MPK aan met de USB-kabel. Open een terminal, typ <code>mpkloop</code> en druk op Enter. Je ziet een grote tabel met 16 <b>tracks</b>. Elke track kan één loop bevatten: een kort stukje muziek dat zich herhaalt.</p><p class=\"tip\">Druk op <kbd>L</kbd> in mpkloop om deze pagina te openen. Klik bovenaan op <b>MPK verbinden</b> en de pagina ziet wat je op de echte MPK indrukt.</p>",
+    "st": {
+     "line": "mpkloop ready"
+    },
+    "comp": true
+   },
+   {
+    "t": "De toetsen spelen een klank",
+    "hl": [
+     [
+      "keys",
+      "SPEEL"
+     ]
+    ],
+    "b": "<p>Speel wat toetsen. Druk harder en de noot is luider. Speel twee of drie toetsen tegelijk voor een akkoord.</p>",
+    "keys": [
+     0,
+     4,
+     7
+    ]
+   },
+   {
+    "t": "OCT − en OCT +",
+    "hl": [
+     [
+      "octdn",
+      "DRUK"
+     ],
+     [
+      "octup",
+      "DRUK"
+     ]
+    ],
+    "b": "<p>Deze twee knoppen schuiven de toetsen lager of hoger. Lage noten zijn voor bas, hoge noten voor melodieën. Druk beide tegelijk om terug naar het midden te gaan.</p>"
+   },
+   {
+    "t": "De joystick",
+    "hl": [
+     [
+      "joy",
+      "BEWEEG"
+     ]
+    ],
+    "b": "<p>Duw hem naar <b>links</b> of <b>rechts</b> terwijl je een noot vasthoudt: de noot buigt. Duw hem <b>omhoog</b>: de noot gaat wiebelen en wordt helderder.</p>",
+    "joy": true
+   },
+   {
+    "t": "De pads hebben twee banken",
+    "hl": [
+     [
+      "bank",
+      "DRUK"
+     ],
+     [
+      "pad1",
+      "TIK"
+     ]
+    ],
+    "b": "<p>De knop <b>BANK A/B</b> schakelt de 8 pads tussen:</p><ul><li><b>Bank A</b> (rood lampje): je <b>looptracks</b>.</li><li><b>Bank B</b> (groen lampje): de <b>drums</b>.</li></ul><p>Pads 1–4 zijn de onderste rij, 5–8 de bovenste. Druk nu op BANK A/B en tik op een pad om het op het scherm te zien.</p>",
+    "st": {
+     "bank": "B"
+    }
+   },
+   {
+    "t": "Sla op de drums",
+    "hl": [
+     [
+      "pad1",
+      "KICK"
+     ],
+     [
+      "pad2",
+      "SNARE"
+     ],
+     [
+      "pad3",
+      "HAT"
+     ]
+    ],
+    "b": "<p>Op bank B sla je op de pads. Pad 1 is de kick, 2 de snare, 3 de hi-hat, 4 de open hi-hat. De bovenste rij heeft een clap en meer. Sla zachter en harder.</p>",
+    "st": {
+     "bank": "B"
+    }
+   },
+   {
+    "t": "De draaiknoppen",
+    "hl": [
+     [
+      "k1",
+      "DRAAI"
+     ]
+    ],
+    "b": "<p>De 8 draaiknoppen veranderen instellingen. Welke, hangt af van de <b>pagina</b>. Op de pagina Volume is knop 1 het volume van track 1, knop 2 van track 2, enzovoort. Draai er een en de naam verschijnt op het schermpje van de MPK.</p>",
+    "st": {
+     "page": 0
+    }
+   },
+   {
+    "t": "Twee speciale knoppen",
+    "hl": [
+     [
+      "cc",
+      "KIJK"
+     ],
+     [
+      "pc",
+      "KIJK"
+     ]
+    ],
+    "b": "<p><b>CC</b> en <b>PROG CHANGE</b> geven de pads even een andere taak. Die gebruik je in de liedjes. Druk nog eens op dezelfde knop om de gewone pads terug te krijgen.</p><p class=\"tip\">Druk niet op <b>PROG SELECT</b> terwijl mpkloop draait.</p>"
+   }
+  ]
+ },
+ {
+  "t": "Liedje 1: een beat, een bas en akkoorden",
+  "steps": [
+   {
+    "t": "Kies een drumkit",
+    "hl": [
+     [
+      "pc",
+      "DRUK"
+     ],
+     [
+      "bank",
+      "BANK B"
+     ],
+     [
+      "pad8",
+      "TIK"
+     ]
+    ],
+    "b": "<p>Druk op <b>PROG CHANGE</b>, ga naar <b>bank B</b> en tik op <b>pad 8</b>. Elke tik geeft de volgende drumkit: Classic, 808, 909, Electro… Kies er een die je mooi vindt en druk dan nog eens op PROG CHANGE om eruit te gaan.</p>",
+    "st": {
+     "mode": "pc",
+     "bank": "B",
+     "kit": 1,
+     "line": "Drum kit: 808"
+    }
+   },
+   {
+    "t": "Neem je beat op op track 1",
+    "hl": [
+     [
+      "pad1",
+      "TIK"
+     ],
+     [
+      "bank",
+      "BANK B"
+     ],
+     [
+      "pad1",
+      "TIK NOG EENS"
+     ]
+    ],
+    "b": "<p>Ga naar <b>bank A</b> en tik op <b>pad 1</b>. Je hoort 4 tikken: dat is het aftellen. Ga dan naar <b>bank B</b> en speel een beat: kick, hat, snare, hat… Houd het simpel.</p><p>Na 1 maat (4 tellen) of 2 maten ga je terug naar bank A en tik je nog eens op <b>pad 1</b>. Je beat herhaalt zich nu. Dat is een loop!</p><p class=\"tip\">Mislukt? Houd pad 1 een seconde vast: de track wordt gewist en je kunt opnieuw.</p>",
+    "st": {
+     "bank": "A",
+     "line": "T1: loop 1 bar"
+    },
+    "tr": {
+     "1": "play"
+    }
+   },
+   {
+    "t": "Kies een basklank",
+    "hl": [
+     [
+      "pc",
+      "DRUK"
+     ],
+     [
+      "pad3",
+      "TIK"
+     ],
+     [
+      "octdn",
+      "DRUK"
+     ]
+    ],
+    "b": "<p>Druk op <b>PROG CHANGE</b>, bank B, tik op <b>pad 3: Bass</b>. Tik nog eens voor de volgende basklank. Druk op PROG CHANGE om eruit te gaan en druk dan één keer op <b>OCT −</b> zodat de toetsen laag spelen.</p>",
+    "st": {
+     "mode": "pc",
+     "bank": "B",
+     "sound": "Sub Bass"
+    }
+   },
+   {
+    "t": "Neem de bas op op track 2",
+    "hl": [
+     [
+      "pad2",
+      "TIK"
+     ],
+     [
+      "keys",
+      "SPEEL"
+     ],
+     [
+      "pad2",
+      "TIK NOG EENS"
+     ]
+    ],
+    "b": "<p>Bank A, tik op <b>pad 2</b>. Het opnemen begint bij de volgende maat, dus je hebt even tijd. Speel een paar lage noten die bij je beat passen. Tik nog eens op pad 2 om de loop te sluiten.</p><p class=\"tip\">De loop sluit aan het eind van een maat, dus je hoeft niet precies op het juiste moment te tikken.</p>",
+    "st": {
+     "bank": "A",
+     "sound": "Sub Bass",
+     "line": "T2: loop 1 bar"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play"
+    },
+    "keys": [
+     0,
+     7
+    ]
+   },
+   {
+    "t": "Akkoorden op track 3",
+    "hl": [
+     [
+      "pc",
+      "DRUK"
+     ],
+     [
+      "pad2",
+      "TIK"
+     ],
+     [
+      "octup",
+      "DRUK"
+     ],
+     [
+      "pad3",
+      "TIK"
+     ]
+    ],
+    "b": "<p>PROG CHANGE, bank B, tik op <b>pad 1: Pads</b> of <b>pad 2: Keys</b> voor een akkoordklank. Verlaat PROG CHANGE, druk op <b>OCT +</b> om weer omhoog te gaan. Bank A, tik op <b>pad 3</b>, speel twee of drie akkoorden, tik nog eens op pad 3.</p>",
+    "st": {
+     "bank": "A",
+     "sound": "E-Piano",
+     "line": "T3: loop 2 bars"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play",
+     "3": "play"
+    },
+    "keys": [
+     0,
+     4,
+     7
+    ]
+   },
+   {
+    "t": "Haal partijen weg en terug",
+    "hl": [
+     [
+      "cc",
+      "DRUK"
+     ],
+     [
+      "pad1",
+      "TIK"
+     ],
+     [
+      "pad1",
+      "TIK NOG EENS"
+     ]
+    ],
+    "b": "<p>Druk op <b>CC</b>. Nu <b>dempen</b> de bank A-pads tracks: tik op pad 1 en de beat stopt bij de volgende tel; tik nog eens en hij is terug. Speel eens met alleen de akkoorden en laat dan de beat binnenkomen. Druk nog eens op CC om eruit te gaan.</p>",
+    "st": {
+     "mode": "cc",
+     "bank": "A"
+    },
+    "tr": {
+     "1": "mute",
+     "2": "play",
+     "3": "play"
+    }
+   },
+   {
+    "t": "Harder of zachter",
+    "hl": [
+     [
+      "pc",
+      "DRUK"
+     ],
+     [
+      "pad1",
+      "TIK"
+     ],
+     [
+      "k2",
+      "DRAAI"
+     ],
+     [
+      "k3",
+      "DRAAI"
+     ]
+    ],
+    "b": "<p>Druk op PROG CHANGE, <b>bank A</b>, tik op <b>pad 1: Volume</b>, druk nog eens op PROG CHANGE. Nu is knop 1 het volume van track 1, knop 2 van track 2, knop 3 van track 3. Draai tot beat, bas en akkoorden goed samen klinken.</p>",
+    "st": {
+     "mode": "pc",
+     "bank": "A",
+     "page": 0
+    }
+   },
+   {
+    "t": "Speel erbovenop",
+    "hl": [
+     [
+      "keys",
+      "SPEEL"
+     ]
+    ],
+    "b": "<p>Kies een klank die je mooi vindt (Leads op pad 4 zijn goed voor melodieën). Speel mee met je loops. Er wordt nu niets opgenomen, dus gewoon plezier maken. Wil je een melodie bewaren? Tik op <b>pad 4</b>, speel hem, tik nog eens.</p>",
+    "st": {
+     "bank": "A",
+     "sound": "Saw Lead"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play",
+     "3": "play"
+    },
+    "keys": [
+     12,
+     14,
+     16,
+     19
+    ]
+   },
+   {
+    "t": "Sla je liedje op",
+    "hl": [],
+    "b": "<p>Druk op de computer op <kbd>s</kbd>, typ een naam zoals <i>mijn eerste liedje</i> en druk op Enter. Druk op <kbd>o</kbd> om het later weer te openen. <kbd>spatie</kbd> stopt en start het afspelen.</p><p class=\"tip\">Liedje 1 klaar! Je gebruikte: tracks, drumpads, klanken, dempen, volume en opslaan.</p>",
+    "st": {
+     "line": "Saved 'mijn eerste liedje'"
+    },
+    "comp": true
+   }
+  ]
+ },
+ {
+  "t": "Liedje 2: de stepsequencer, effecten en scenes",
+  "steps": [
+   {
+    "t": "Begin leeg",
+    "hl": [],
+    "b": "<p>Druk twee keer op <kbd>C</kbd> op de computer om alle tracks te wissen (sla eerst op als je Liedje 1 wilt houden). In dit liedje maakt de computer de beat en speel jij erbovenop.</p>",
+    "st": {
+     "line": "All tracks cleared"
+    },
+    "comp": true
+   },
+   {
+    "t": "Open het stepraster",
+    "hl": [],
+    "b": "<p>Druk op <kbd>t</kbd>. Je ziet een raster: 8 rijen (kick, snare, hat…) en 16 stappen. Eén rij van 16 stappen is één maat. Beweeg met de pijltjestoetsen en zet een stap aan met <kbd>spatie</kbd>. Zet de kick op stap 1, 5, 9, 13 en de snare op 5 en 13. Druk op <kbd>T</kbd> om het te horen. Druk op <kbd>t</kbd> om het raster te sluiten.</p><p class=\"tip\">Met de muis: klik op een stap. Rechtsklikken maakt een stap luider of zachter.</p>",
+    "st": {
+     "line": "Step sequencer on"
+    },
+    "comp": true
+   },
+   {
+    "t": "Teken stappen met de pads",
+    "hl": [
+     [
+      "pad1",
+      "TIK"
+     ],
+     [
+      "pad3",
+      "TIK"
+     ],
+     [
+      "pad5",
+      "TIK"
+     ]
+    ],
+    "b": "<p>Druk op <kbd>m</kbd> tot de statusregel <b>pad B: Steps</b> zegt. Nu zetten de bank B-pads stap 1–8 aan en uit voor één drum. <kbd>Tab</kbd> gaat naar stap 9–16, <kbd>Shift-Tab</kbd> kiest de volgende drum. Voeg wat hi-hats toe. Druk op <kbd>m</kbd> tot het weer <b>Drums</b> zegt als je klaar bent.</p>",
+    "st": {
+     "bank": "B",
+     "padb": "Steps",
+     "line": "Bank B pads: Steps"
+    }
+   },
+   {
+    "t": "Swing en een andere kit",
+    "hl": [
+     [
+      "k2",
+      "SWING"
+     ],
+     [
+      "k4",
+      "KIT"
+     ]
+    ],
+    "b": "<p>Druk op <kbd>→</kbd> tot de knoppenpagina <b>SEQ</b> zegt. Knop 2 is <b>Swing</b>: draai hem open en de beat gaat huppelen. Knop 4 kiest de <b>kit</b>. Knop 5 is het volume van de beat.</p>",
+    "st": {
+     "page": 11,
+     "line": "Knob page: SEQ"
+    }
+   },
+   {
+    "t": "Neem de bas en akkoorden op",
+    "hl": [
+     [
+      "pad1",
+      "TIK"
+     ],
+     [
+      "keys",
+      "SPEEL"
+     ],
+     [
+      "pad2",
+      "TIK"
+     ]
+    ],
+    "b": "<p>Net als in Liedje 1: kies een basklank (PROG CHANGE, bank B, pad 3), tik op <b>pad 1</b> op bank A, speel, tik nog eens. Dan akkoorden op <b>pad 2</b>. De sequencer speelt eronder door en wordt nooit in je loops opgenomen.</p>",
+    "st": {
+     "bank": "A",
+     "sound": "Pluck Bass"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play"
+    },
+    "keys": [
+     0,
+     3,
+     7
+    ]
+   },
+   {
+    "t": "Geef je tracks een naam",
+    "hl": [],
+    "b": "<p>Druk op <kbd>a</kbd> en dan <kbd>1</kbd>, typ <i>Bas</i>, Enter. Druk op <kbd>a</kbd> <kbd>2</kbd>, typ <i>Akkoorden</i>. De namen staan in de tabel, zodat je altijd weet wat waar staat.</p>",
+    "st": {
+     "line": "Name track: press 1-8"
+    },
+    "comp": true
+   },
+   {
+    "t": "Kopieer een track en maak hem langer",
+    "hl": [
+     [
+      "pad3",
+      "TIK"
+     ]
+    ],
+    "b": "<p>Druk op <kbd>c</kbd> <kbd>2</kbd> <kbd>3</kbd>: de akkoorden worden naar track 3 gekopieerd. Druk op <kbd>D</kbd> <kbd>3</kbd>: track 3 is nu twee keer zo lang. Tik nu op <b>pad 3</b> (overdub) en speel alleen in de tweede helft een tweede akkoordpartij. Tik nog eens op pad 3. Demp track 2 met CC om alleen de nieuwe te horen.</p>",
+    "st": {
+     "bank": "A",
+     "line": "T3: loop is now 4 bars"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play",
+     "3": "odub"
+    }
+   },
+   {
+    "t": "Een effect op een track",
+    "hl": [
+     [
+      "k2",
+      "EFFECT"
+     ]
+    ],
+    "b": "<p>Druk op <kbd>→</kbd> naar de pagina <b>TRACK FX</b>. Knop 2 kiest een effect voor track 2: Crush, Drive, Chorus, Tape of Comb. Dan <kbd>→</kbd> naar <b>FX AMOUNT</b> en draai knop 2 open. Chorus op akkoorden klinkt breed; Crush op een bas klinkt als een oude videogame.</p>",
+    "st": {
+     "page": 8,
+     "line": "Knob page: TRACK FX"
+    }
+   },
+   {
+    "t": "Duck: het pompende geluid",
+    "hl": [
+     [
+      "k2",
+      "DUCK"
+     ]
+    ],
+    "b": "<p><kbd>→</kbd> naar de pagina <b>DUCK</b>. Draai knop 2 half open. Nu duiken de akkoorden een beetje weg elke keer als de kick slaat. Dat pompen hoor je in veel dansmuziek.</p>",
+    "st": {
+     "page": 10,
+     "line": "Knob page: DUCK"
+    }
+   },
+   {
+    "t": "Sla twee scenes op",
+    "hl": [],
+    "b": "<p>Een scene onthoudt al je volumes, dempingen en effecten. Maak een rustige versie (demp de bas, draai de akkoorden zachter) en druk op <kbd>N</kbd> <kbd>1</kbd>. Maak een volle versie en druk op <kbd>N</kbd> <kbd>2</kbd>. Nu wisselen <kbd>n</kbd> <kbd>1</kbd> en <kbd>n</kbd> <kbd>2</kbd> ertussen bij de volgende maat.</p><p class=\"tip\">Op de MPK: druk op <kbd>m</kbd> tot het <b>Scenes</b> zegt. Dan roept een tik op een bank B-pad die scene op, en vasthouden slaat er een op.</p>",
+    "st": {
+     "line": "Scene 2 at the next bar"
+    },
+    "comp": true
+   },
+   {
+    "t": "Neem een hele performance op",
+    "hl": [],
+    "b": "<p>Druk op <kbd>b</kbd>. Alles wat je hoort wordt nu opgenomen in een WAV-bestand. Wissel tussen je scenes, demp dingen, speel een melodie. Druk nog eens op <kbd>b</kbd> om te stoppen. Het bestand staat in <code>~/Music/mpkloop/bounces/</code>. Druk op <kbd>s</kbd> om de sessie ook op te slaan.</p><p class=\"tip\">Liedje 2 klaar! Nieuw: stepsequencer, swing, namen, kopiëren, verdubbelen, effecten, duck, scenes, bounce.</p>",
+    "st": {
+     "line": "Bounce saved"
+    },
+    "comp": true
+   }
+  ]
+ },
+ {
+  "t": "Liedje 3: je eigen klanken, de sampler en een live show",
+  "steps": [
+   {
+    "t": "Vind je favoriete klanken",
+    "hl": [],
+    "b": "<p>Druk op <kbd>u</kbd>. Dit is de klankbibliotheek. Beweeg met <kbd>↑</kbd> <kbd>↓</kbd> en speel de toetsen: je hoort de klank die je aanwijst. Druk op <kbd>f</kbd> bij de klanken waar je van houdt: ze krijgen een ★ en komen <b>eerst</b> als je op de MPK op die categoriepad tikt. <kbd>Esc</kbd> sluit het.</p>",
+    "st": {
+     "line": "★ Favorite: Hoover"
+    },
+    "comp": true
+   },
+   {
+    "t": "Maak je eigen klank",
+    "hl": [
+     [
+      "k1",
+      "CUTOFF"
+     ],
+     [
+      "k2",
+      "RESONANCE"
+     ],
+     [
+      "k4",
+      "RELEASE"
+     ]
+    ],
+    "b": "<p>Kies een klank. Ga naar de pagina <b>SOUND</b> (PROG CHANGE, bank A, pad 7). Knop 1 maakt hem donkerder of helderder, knop 2 laat hem piepen, knop 3 laat noten langzaam beginnen, knop 4 laat ze langer naklinken. Mooi? Druk op <kbd>u</kbd>, dan <kbd>n</kbd>, typ een naam. Hij staat nu in de bibliotheek met jouw naam erop.</p>",
+    "st": {
+     "page": 6,
+     "sound": "Acid",
+     "line": "Saved sound 'Mijn Acid' to the library"
+    }
+   },
+   {
+    "t": "Neem een beat op en hak hem in stukken",
+    "hl": [
+     [
+      "pad1",
+      "TIK"
+     ],
+     [
+      "pad3",
+      "TIK"
+     ],
+     [
+      "pad2",
+      "TIK"
+     ]
+    ],
+    "b": "<p>Neem een beat op op track 1 zoals in Liedje 1. Druk dan op <kbd>y</kbd> <kbd>1</kbd>: de loop wordt in de <b>sampler</b> gekopieerd en in 8 stukken gehakt. Druk op <kbd>m</kbd> tot de statusregel <b>Chops</b> zegt. Nu spelen de bank B-pads de 8 stukken. Speel ze in een andere volgorde!</p>",
+    "st": {
+     "bank": "B",
+     "padb": "Chops",
+     "line": "Sampler: took the loop of T1"
+    },
+    "tr": {
+     "1": "play"
+    }
+   },
+   {
+    "t": "Neem de gehakte beat op",
+    "hl": [
+     [
+      "pad2",
+      "TIK"
+     ],
+     [
+      "bank",
+      "BANK B"
+     ]
+    ],
+    "b": "<p>Demp track 1 (CC + pad 1). Bank A, tik op <b>pad 2</b>, speel je chops op bank B, tik nog eens op pad 2. Nu heb je een nieuwe beat gemaakt uit de oude. Probeer de pagina <b>SAMPLER</b> (<kbd>→</kbd> tot het eind): knop 1 verandert de toonhoogte, knop 8 speelt hem achterstevoren.</p>",
+    "st": {
+     "bank": "A",
+     "padb": "Chops"
+    },
+    "tr": {
+     "1": "mute",
+     "2": "play"
+    }
+   },
+   {
+    "t": "Sample je eigen stem",
+    "hl": [
+     [
+      "k4",
+      "INPUT GAIN"
+     ],
+     [
+      "keys",
+      "SPEEL"
+     ]
+    ],
+    "b": "<p>Ga naar de pagina <b>GLOBAL</b> en draai knop 4 (<b>Input Gain</b>) een beetje open. Gebruik een koptelefoon, anders gaat het rondzingen! Druk op <kbd>Y</kbd>, zeg of zing iets, druk nog eens op <kbd>Y</kbd>. Druk op <kbd>i</kbd>: nu spelen de toetsen je stem, hoog en laag. Chops spelen er stukjes van.</p>",
+    "st": {
+     "page": 7,
+     "line": "Sampler: recorded 2.3 s"
+    },
+    "keys": [
+     0,
+     5,
+     7
+    ]
+   },
+   {
+    "t": "Arpeggiator en Note Repeat",
+    "hl": [
+     [
+      "arp",
+      "DRUK"
+     ],
+     [
+      "keys",
+      "HOUD AKKOORD"
+     ],
+     [
+      "repeat",
+      "HOUD"
+     ],
+     [
+      "pad3",
+      "HOUD"
+     ]
+    ],
+    "b": "<p>Druk op <b>ARP</b> op de MPK en houd een akkoord vast: de noten spelen na elkaar, in de maat van je loops. Houd <b>NOTE REPEAT</b> vast en houd een drumpad vast: een snelle roffel, ook in de maat. Neem een van beide op in een track.</p>",
+    "st": {
+     "bank": "B"
+    },
+    "keys": [
+     0,
+     4,
+     7
+    ]
+   },
+   {
+    "t": "Meer dan 8 tracks",
+    "hl": [
+     [
+      "pad1",
+      "TIK"
+     ]
+    ],
+    "b": "<p>Druk op <kbd>B</kbd>. De bovenste regel zegt nu <b>pads: T9-16</b>: de pads en toetsen 1–8 werken op track 9 tot 16. Neem iets op op pad 1: het komt op track 9. Druk nog eens op <kbd>B</kbd> om terug te gaan naar track 1–8.</p>",
+    "st": {
+     "bank": "A",
+     "line": "Pads and keys 1-8 now address tracks 9-16"
+    },
+    "tr": {
+     "1": "play",
+     "2": "play"
+    }
+   },
+   {
+    "t": "Solo",
+    "hl": [],
+    "b": "<p>Druk op <kbd>z</kbd> <kbd>2</kbd>: je hoort alleen track 2. Handig om één partij te controleren. Druk op <kbd>Z</kbd> en alles komt terug.</p>",
+    "st": {
+     "line": "T2: solo on"
+    },
+    "comp": true
+   },
+   {
+    "t": "Live-effecten",
+    "hl": [
+     [
+      "pad2",
+      "HOUD"
+     ],
+     [
+      "pad5",
+      "HOUD"
+     ],
+     [
+      "pad6",
+      "HOUD"
+     ]
+    ],
+    "b": "<p>Druk op <kbd>m</kbd> tot het <b>FX</b> zegt. Nu zijn de bank B-pads effecten zolang je ze <b>vasthoudt</b>: pad 1–4 herhalen een klein stukje (stutter), pad 5 vertraagt alles als een cassettebandje, pad 6 speelt alles achterstevoren, pad 8 verbrijzelt het geluid. Laat los en de muziek springt weer in de maat.</p>",
+    "st": {
+     "bank": "B",
+     "padb": "FX",
+     "line": "Bank B pads: FX"
+    }
+   },
+   {
+    "t": "Vrij tempo",
+    "hl": [
+     [
+      "k2",
+      "REC MODE"
+     ],
+     [
+      "pad1",
+      "TIK"
+     ],
+     [
+      "pad1",
+      "TIK NOG EENS"
+     ]
+    ],
+    "b": "<p>Wis alles (<kbd>C</kbd> <kbd>C</kbd>). Zet op de pagina GLOBAL knop 2 (<b>Rec Mode</b>) op <b>Free→Tempo</b>. Tik op pad 1 en begin meteen te spelen, zonder aftellen. Tik precies op pad 1 wanneer je loop moet eindigen. mpkloop berekent het tempo uit je loop.</p>",
+    "st": {
+     "page": 7,
+     "line": "Tempo set from loop: 92.4 BPM (2 bars)"
+    }
+   },
+   {
+    "t": "Exporteer je liedje",
+    "hl": [],
+    "b": "<p>Druk op <kbd>e</kbd> en dan <kbd>3</kbd>. mpkloop schrijft een WAV-bestand per track, een mix, en een MIDI-bestand met de noten die je speelde, naar <code>~/Music/mpkloop/exports/</code>. Die kun je in elk muziekprogramma openen en daar verder werken.</p><p class=\"tip\">Liedje 3 klaar! Je kent nu elke functie. Maak iets wat nog niemand heeft gehoord.</p>",
+    "st": {
+     "line": "Exported: stems 4 bars, 5 MIDI tracks"
+    },
+    "comp": true
+   }
+  ]
+ }
+]
+};
+
+// ------------------------------------------------------------------ drawing
+const NS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById("mpk");
+const G = {};
+const layers = {};
+const KEY_WHITE = [0, 2, 4, 5, 7, 9, 11];
+function mk(tag, a, parent) { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; }
+function txt(s, x, y, a, parent) { const t = mk("text", Object.assign({ x, y }, a), parent); t.textContent = s; return t; }
+function button(id, label, x, y, w, h) {
+  const g = mk("g", { class: "ctl", "data-id": id });
+  mk("rect", { x, y, width: w, height: h, rx: 7, fill: "var(--dev-btn)", class: "face" }, g);
+  mk("circle", { cx: x + 10, cy: y + h / 2, r: 4, fill: "#16181b", class: "led" }, g);
+  txt(label, x + 18, y + h / 2 + 4, { "font-size": label.length > 9 ? 9.5 : 11, fill: "#d9dce1", "font-weight": 600 }, g);
+  G[id] = { x, y, w, h };
+}
+function build() {
+  svg.innerHTML = "";
+  for (const [id, x, label] of [["usb", 120, "USB"], ["sustain", 870, "SUSTAIN"]]) {
+    const g = mk("g", { class: "ctl", "data-id": id });
+    mk("rect", { x: x - 26, y: -16, width: 52, height: 18, rx: 4, fill: "#2f3237", class: "face" }, g);
+    mk("circle", { cx: x, cy: -7, r: 5, fill: "#0b0c0e" }, g);
+    txt(label, x, -26, { "text-anchor": "middle", "font-size": 13, fill: "var(--muted)", "font-weight": 600 }, g);
+    G[id] = { x: x - 26, y: -16, w: 52, h: 18 };
+  }
+  mk("rect", { x: 0, y: 0, width: 1000, height: 564, rx: 24, fill: "var(--dev-body)" });
+  mk("rect", { x: 12, y: 12, width: 976, height: 290, rx: 16, fill: "var(--dev-panel)" });
+  txt("MPK mini", 26, 292, { "font-size": 15, "font-weight": 700, fill: "var(--dev-label)", "letter-spacing": 1 });
+
+  let g = mk("g", { class: "ctl", "data-id": "joy" });
+  mk("circle", { cx: 106, cy: 88, r: 52, fill: "var(--dev-well)", stroke: "#3a3e45", "stroke-width": 2, class: "face" }, g);
+  layers.stick = mk("g", {}, g);
+  mk("circle", { cx: 106, cy: 88, r: 22, fill: "#2c2f35", stroke: "#4a4e56", "stroke-width": 2 }, layers.stick);
+  mk("circle", { cx: 106, cy: 88, r: 9, fill: "#3d4148" }, layers.stick);
+  G.joy = { x: 54, y: 36, w: 104, h: 104, shape: "circle", cx: 106, cy: 88, r: 52 };
+
+  for (const [id, label, x, y] of [["arp", "ARP", 22, 160], ["tap", "TAP TEMPO", 108, 160], ["octdn", "OCT −", 22, 204],
+    ["octup", "OCT +", 108, 204], ["full", "FULL LEVEL", 22, 248], ["repeat", "NOTE REPEAT", 108, 248]]) button(id, label, x, y, 78, 30);
+
+  layers.pads = mk("g", {});
+  for (let i = 0; i < 8; i++) {
+    const col = i % 4, row = i < 4 ? 1 : 0;
+    const x = 200 + col * 96, y = 30 + row * 98;
+    const pg = mk("g", { class: "ctl", "data-id": "pad" + (i + 1) }, layers.pads);
+    mk("rect", { x, y, width: 86, height: 86, rx: 10, fill: "var(--dev-pad)", class: "face padface" }, pg);
+    mk("rect", { x: x + 3, y: y + 3, width: 80, height: 80, rx: 8, fill: "none", "stroke-width": 3, class: "padled" }, pg);
+    txt(String(i + 1), x + 9, y + 20, { "font-size": 13, fill: "var(--dev-label)", "font-weight": 600 }, pg);
+    txt("", x + 43, y + 56, { "font-size": 12.5, fill: "#f2f3f5", "text-anchor": "middle", "font-weight": 600, class: "padtext" }, pg);
+    G["pad" + (i + 1)] = { x, y, w: 86, h: 86 };
+  }
+  G.pads = G.pads7 = { x: 200, y: 30, w: 374, h: 184 };
+  layers.modeText = txt("", 387, 244, { "text-anchor": "middle", "font-size": 14, fill: "var(--dev-label)", "font-weight": 600, "letter-spacing": 1.5 });
+
+  g = mk("g", { class: "ctl", "data-id": "screen" });
+  mk("rect", { x: 592, y: 30, width: 160, height: 74, rx: 8, fill: "#0e1013", class: "face" }, g);
+  mk("rect", { x: 600, y: 38, width: 144, height: 58, rx: 3, fill: "var(--oled)" }, g);
+  layers.scr1 = txt("", 607, 60, { "font-size": 13, fill: "var(--oled-ink)", "font-weight": 600 }, g);
+  layers.scr2 = txt("", 607, 84, { "font-size": 12, fill: "var(--oled-ink)", opacity: 0.8 }, g);
+  G.screen = { x: 592, y: 30, w: 160, h: 74 };
+  button("bank", "BANK A/B", 592, 124, 76, 32);
+  button("cc", "CC", 676, 124, 76, 32);
+  button("pc", "PROG CHANGE", 592, 170, 76, 32);
+  button("progsel", "PROG SELECT", 676, 170, 76, 32);
+
+  layers.knobLabels = []; layers.knobPtr = [];
+  for (let i = 0; i < 8; i++) {
+    const col = i % 4, row = i < 4 ? 0 : 1;
+    const cx = 800 + col * 56, cy = 66 + row * 110;
+    const kg = mk("g", { class: "ctl", "data-id": "k" + (i + 1) });
+    mk("circle", { cx, cy, r: 23, fill: "#0f1012", stroke: "#3a3e45", "stroke-width": 2, class: "face" }, kg);
+    layers.knobPtr.push(mk("line", { x1: cx, y1: cy - 8, x2: cx, y2: cy - 20, stroke: "#e8eaee", "stroke-width": 3, "stroke-linecap": "round" }, kg));
+    layers.knobLabels.push(txt("", cx, cy + 40, { "text-anchor": "middle", "font-size": 11, fill: "var(--dev-label)", "font-weight": 600 }, kg));
+    G["k" + (i + 1)] = { x: cx - 23, y: cy - 23, w: 46, h: 46, shape: "circle", cx, cy, r: 23, ang: 0 };
+  }
+  G.knobs = { x: 770, y: 36, w: 222, h: 196 };
+
+  layers.keys = mk("g", { class: "ctl", "data-id": "keys" });
+  const x0 = 22, ww = 956 / 15, top = 318, wh = 230, bh = 140, bw = 38;
+  layers.keyEls = {};
+  let wi = 0;
+  for (let s = 0; s <= 24; s++) if (KEY_WHITE.includes(s % 12)) {
+    layers.keyEls[s] = mk("rect", { x: x0 + wi * ww + 1, y: top, width: ww - 2, height: wh, rx: 5, fill: "var(--dev-key)" }, layers.keys); wi++;
+  }
+  wi = 0;
+  for (let s = 0; s <= 24; s++) {
+    if (KEY_WHITE.includes(s % 12)) { wi++; continue; }
+    layers.keyEls[s] = mk("rect", { x: x0 + wi * ww - bw / 2, y: top, width: bw, height: bh, rx: 4, fill: "var(--dev-black)" }, layers.keys);
+  }
+  G.keys = { x: x0, y: top, w: 956, h: wh };
+  layers.live = mk("g", { "pointer-events": "none" });
+  layers.hl = mk("g", { "pointer-events": "none" });
+  svg.querySelectorAll(".ctl").forEach(c => c.addEventListener("click", () => onControl(c.dataset.id)));
+}
+
+// ------------------------------------------------------------------ language
+let lang = "en";
+try { lang = localStorage.getItem("mpkloop-lang") || ((navigator.language || "").toLowerCase().startsWith("nl") ? "nl" : "en"); } catch (e) {}
+if (!TXT[lang]) lang = "en";
+let L = LESSONS[lang], PARAM_HELP = PARAM_HELP_ALL[lang];
+const tx = k => TXT[lang][k];
+function paramHelp(page, name) {
+  const base = name.replace(/^T\d /, "");
+  return PARAM_HELP[PAGES[page] + ":" + base] || PARAM_HELP[base] || "";
+}
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = lang === "nl" ? "mpkloop Lessen" : "mpkloop Lessons";
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = tx(el.dataset.i18n); });
+  document.getElementById("lang-en").setAttribute("aria-pressed", lang === "en");
+  document.getElementById("lang-nl").setAttribute("aria-pressed", lang === "nl");
+  document.getElementById("keytable").innerHTML = `<tr><th>${tx("th_key")}</th><th>${tx("th_does")}</th></tr>` +
+    tx("keyrows").map(([k, d]) => `<tr><td>${k.split(" / ").map(x => `<kbd>${x}</kbd>`).join(" / ")}</td><td>${d}</td></tr>`).join("");
+  document.getElementById("troubletable").innerHTML = `<tr><th>${tx("th_see")}</th><th>${tx("th_fix")}</th></tr>` +
+    tx("troublerows").map(([a, b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join("");
+  if (!midiOn) setMidiStatus(midiBtn.className.replace("chip", "").trim(), navigator.requestMIDIAccess ? tx("connect") : tx("connect_chrome"));
+}
+function setLang(l) {
+  if (!TXT[l]) return;
+  lang = l; L = LESSONS[lang]; PARAM_HELP = PARAM_HELP_ALL[lang];
+  try { localStorage.setItem("mpkloop-lang", lang); } catch (e) {}
+  applyLang(); buildRail(); buildRef();
+  if (mode === "explore") setMode("explore"); else renderStep();
+}
+
+// ------------------------------------------------------------------ state & rendering
+const DEFAULT = { bank: "A", mode: "note", padb: "Drums", page: 0, sound: "Saw Pad", kit: 0, line: "" };
+let mode = "lessons", li = 0, si = 0, explore = Object.assign({}, DEFAULT);
+let tasks = [];                      // current step's tasks: {id,label,done}
+let progress = new Set();            // "li.si" of completed steps
+try { progress = new Set(JSON.parse(localStorage.getItem("mpkloop-progress") || "[]")); } catch (e) {}
+function saveProgress() { try { localStorage.setItem("mpkloop-progress", JSON.stringify([...progress])); } catch (e) {} }
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function stepState(l, s) { return Object.assign({}, DEFAULT, L[l].steps[s].st || {}); }
+function curState() { return mode === "explore" ? explore : stepState(li, si); }
+
+function paint(st, step) {
+  const led = st.bank === "A" ? cssVar("--bank-a") : cssVar("--bank-b");
+  svg.querySelectorAll("[data-id^=pad]").forEach((pg, i) => {
+    pg.querySelector(".padled").setAttribute("stroke", led);
+    pg.querySelector(".padled").setAttribute("stroke-opacity", "0.75");
+    pg.querySelector(".padtext").textContent = padLabel(i, st);
+  });
+  const sub = st.mode === "note" && st.bank === "B" && st.padb && st.padb !== "Drums" ? ` · ${st.padb.toUpperCase()}` : "";
+  layers.modeText.textContent = `BANK ${st.bank} · ${{ note: "NOTES", cc: "CC", pc: "PROG CHANGE" }[st.mode]}${sub}`;
+  layers.modeText.setAttribute("fill", led);
+  svg.querySelector("[data-id=bank] .led").setAttribute("fill", led);
+  svg.querySelector("[data-id=cc] .led").setAttribute("fill", st.mode === "cc" ? "#f4f6ff" : "#16181b");
+  svg.querySelector("[data-id=pc] .led").setAttribute("fill", st.mode === "pc" ? "#f4f6ff" : "#16181b");
+  const params = st.page == null ? null : PAGE_PARAMS[st.page];
+  layers.knobLabels.forEach((t, i) => t.textContent = params ? params[i] : "K" + (i + 1));
+  layers.scr1.textContent = `${(PAGES[st.page] || "").toUpperCase().slice(0, 7)}|${st.sound}`.slice(0, 17);
+  layers.scr2.textContent = (st.line || "").slice(0, 19);
+  for (const k in layers.keyEls) layers.keyEls[k].setAttribute("fill", KEY_WHITE.includes(k % 12) ? "var(--dev-key)" : "var(--dev-black)");
+  layers.hl.innerHTML = "";
+  if (!step) return;
+  (step.keys || []).forEach(s => layers.keyEls[s] && layers.keyEls[s].setAttribute("fill", "var(--tape)"));
+  tasks.forEach((t, n) => mark(t.id, t.label, n + 1, step, t.done));
+}
+
+function mark(id, label, num, step, done) {
+  const b = G[id];
+  if (!b) return;
+  const h = layers.hl, cls = "ring" + (done ? " done" : " pulse");
+  if (id === "pads7") { for (let i = 1; i <= 7; i++) mark("pad" + i, null, null, step, done); }
+  else if (b.shape === "circle") mk("circle", { cx: b.cx, cy: b.cy, r: b.r + 7, class: cls }, h);
+  else mk("rect", { x: b.x - 6, y: b.y - 6, width: b.w + 12, height: b.h + 12, rx: 12, class: cls }, h);
+  const col = done ? "var(--ok)" : "var(--tape)";
+  if (/^k\d$/.test(id)) {
+    const r = b.r + 15, a0 = -2.4, a1 = -0.75, p = a => `${b.cx + r * Math.cos(a)},${b.cy + r * Math.sin(a)}`;
+    mk("path", { d: `M${p(a0)} A${r},${r} 0 0 1 ${p(a1)}`, fill: "none", stroke: col, "stroke-width": 3.5, "stroke-linecap": "round" }, h);
+    const ax = b.cx + r * Math.cos(a1), ay = b.cy + r * Math.sin(a1);
+    mk("path", { d: `M${ax - 9},${ay - 3} L${ax + 2},${ay + 1} L${ax - 4},${ay + 10}`, fill: "none", stroke: col, "stroke-width": 3.5, "stroke-linecap": "round", "stroke-linejoin": "round" }, h);
+  }
+  if (id === "joy" && step && step.joy) for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1]]) {
+    const x = b.cx + dx * 72, y = b.cy + dy * 72;
+    mk("path", { d: `M${b.cx + dx * 58},${b.cy + dy * 58} L${x},${y}`, stroke: col, "stroke-width": 4, "stroke-linecap": "round" }, h);
+    mk("circle", { cx: x, cy: y, r: 5, fill: col }, h);
+  }
+  if (num == null) return;
+  const bx = b.x - 6, by = b.y - 6;
+  mk("circle", { cx: bx, cy: by, r: 13, fill: col, stroke: "var(--dev-body)", "stroke-width": 2 }, h);
+  txt(done ? "✓" : String(num), bx, by + 5, { "text-anchor": "middle", "font-size": 14, "font-weight": 700, fill: done ? "var(--ok-ink)" : "var(--tape-ink)" }, h);
+  if (label) {
+    const w = label.length * 8.6 + 16;
+    const lx = Math.max(4, Math.min(b.x + b.w / 2 - w / 2, 996 - w)), ly = id === "keys" ? b.y - 26 : b.y + b.h + 2;
+    mk("rect", { x: lx, y: ly, width: w, height: 22, rx: 2, fill: col, transform: `rotate(-1.5 ${lx + w / 2} ${ly + 11})` }, h);
+    txt(label, lx + w / 2, ly + 15.5, { "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: done ? "var(--ok-ink)" : "var(--tape-ink)", "letter-spacing": 0.5 }, h);
+  }
+}
+
+// live feedback on the drawing (clicks and real MIDI)
+function flashControl(id, color) {
+  const b = G[id];
+  if (!b) return;
+  const c = color || "var(--tape)";
+  const el = b.shape === "circle"
+    ? mk("circle", { cx: b.cx, cy: b.cy, r: b.r + 3, fill: "none", stroke: c, "stroke-width": 6, class: "flash" }, layers.live)
+    : mk("rect", { x: b.x - 2, y: b.y - 2, width: b.w + 4, height: b.h + 4, rx: 10, fill: c, opacity: 0.5, class: "flash" }, layers.live);
+  setTimeout(() => el.remove(), 900);
+}
+let keyBase = 48;   // MIDI note of the lowest key (C3 at the default octave); follows OCT -/+
+function keySemi(note) {
+  if (note < keyBase || note > keyBase + 24) {
+    let best = keyBase, dist = 1e9;
+    for (let b = 48 - 48; b <= 48 + 48; b += 12) if (note >= b && note <= b + 24 && Math.abs(b - keyBase) < dist) { best = b; dist = Math.abs(b - keyBase); }
+    keyBase = best;
+  }
+  return note - keyBase;
+}
+function pressKey(semi, on) {
+  const k = layers.keyEls[semi];
+  if (!k) return;
+  k.setAttribute("fill", on ? "var(--tape)" : (KEY_WHITE.includes(semi % 12) ? "var(--dev-key)" : "var(--dev-black)"));
+}
+let toastT;
+function toast(msg, ok) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "toast show" + (ok ? " ok" : "");
+  clearTimeout(toastT); toastT = setTimeout(() => t.className = "toast", 1800);
+}
+
+// ------------------------------------------------------------------ info panel
+function describe(id, st) {
+  const D = tx("d");
+  const pad = id.match(/^pad(\d)$/), knob = id.match(/^k(\d)$/);
+  if (pad) {
+    const i = +pad[1] - 1, n = i + 1;
+    if (st.mode === "note" && st.bank === "A") return D.loop(n);
+    if (st.mode === "note") {
+      if (st.padb === "Steps") return D.step(n);
+      if (st.padb === "Chops") return D.chop(n);
+      if (st.padb === "Scenes") return D.scene(n);
+      if (st.padb === "FX") return D.fx(n, FX_PADS[i]);
+      return D.drum(n, KITS[st.kit][1][i], KITS[st.kit][0]);
+    }
+    if (st.mode === "cc" && st.bank === "A") return D.mute(n);
+    if (st.mode === "cc") return D.undo(n);
+    if (st.bank === "A") return D.page(n, PAGES[i], PAGE_PARAMS[i].join(", "));
+    if (i < 7) return D.cat(n, CATS[i][0], CAT_HINTS[lang][i], CATS[i][1].join(" → "));
+    return D.kit;
+  }
+  if (knob) {
+    const k = +knob[1] - 1;
+    if (st.page == null) return D.knob(k + 1);
+    const name = PAGE_PARAMS[st.page][k];
+    return [D.knobp(k + 1, name), paramHelp(st.page, name) + ` (${PAGES[st.page]})`];
+  }
+  return D[id] || [id, ""];
+}
+const STATE_TXT = { play: "▶ PLAY ", rec: "● REC  ", armed: "◌ ARMED", odub: "◉ ODUB ", mute: "▷ MUTED", empty: "· empty" };
+function mockScreen(step, st) {
+  if (!step || (!step.tr && !st.line)) return "";
+  const tr = step.tr || {};
+  const rows = [1, 2, 3, 4, 5].filter(n => n <= 4 || tr[n]).map(n => {
+    const s = tr[n] || "empty";
+    return `<span class="t">${n}</span> <span class="${s}">${STATE_TXT[s]}</span>`;
+  });
+  return `<div class="mock"><span class="t">mpkloop · TRACKS</span>\n${rows.join("\n")}${st.line ? `\n<span class="t">LOG</span>  <span class="log"></span>` : ""}</div>`;
+}
+function showInfo(h, d, st, step) {
+  const info = document.getElementById("info");
+  const modeTxt = { note: tx("mode_normal") + (st.bank === "B" && st.padb && st.padb !== "Drums" ? ` (${st.padb})` : ""), cc: "CC", pc: "PROG CHANGE" }[st.mode];
+  info.innerHTML = `<span class="eyebrow">${mode === "explore" ? tx("explore") : tx("what_this_does")}</span><h3></h3><p class="what"></p>
+    <p class="state">${tx("pads_state")(st.bank, modeTxt, PAGES[st.page] || "-")}</p>${mockScreen(step, st)}`;
+  info.querySelector("h3").textContent = h;
+  info.querySelector(".what").textContent = d;
+  const log = info.querySelector(".mock .log"); if (log) log.textContent = st.line;
+}
+
+// ------------------------------------------------------------------ tasks (clicks + MIDI)
+function taskMatchesControl(task, id) {
+  if (task.id === id) return true;
+  if ((task.id === "pads" || task.id === "pads7") && /^pad\d$/.test(id)) return task.id === "pads" || +id[3] <= 7;
+  if (task.id === "knobs" && /^k\d$/.test(id)) return true;
+  return false;
+}
+function completeTask(idx, via) {
+  if (mode !== "lessons" || tasks[idx].done) return;
+  for (let i = 0; i <= idx; i++) tasks[i].done = true;   // a later move implies the earlier ones
+  paint(stepState(li, si), L[li].steps[si]);
+  renderTasks();
+  if (tasks.every(t => t.done)) finishStep(via);
+  else toast(tx("n_of_m")(tasks.filter(t => t.done).length, tasks.length));
+}
+function finishStep(via) {
+  const key = `${li}.${si}`;
+  progress.add(key); saveProgress();
+  renderRail(); renderStepNav();
+  toast(via === "midi" ? tx("done_midi") : tx("done_step"), true);
+  document.querySelectorAll("#lessonlist li").forEach(el => { if (el.dataset.key === key) el.classList.add("done"); });
+}
+
+function onControl(id) {
+  const st = curState();
+  flashControl(id);
+  if (mode === "explore") {
+    if (id === "bank") explore.bank = explore.bank === "A" ? "B" : "A";
+    if (id === "cc") explore.mode = explore.mode === "cc" ? "note" : "cc";
+    if (id === "pc") explore.mode = explore.mode === "pc" ? "note" : "pc";
+    const pad = id.match(/^pad(\d)$/);
+    if (pad && explore.mode === "pc") {
+      const i = +pad[1] - 1;
+      if (explore.bank === "A") { explore.page = i; explore.line = PAGES[i] + " " + tx("page_word"); }
+      else if (i < 7) { const list = CATS[i][1], cur = list.indexOf(explore.sound); explore.sound = list[(cur + 1) % list.length]; explore.line = CATS[i][0]; }
+      else { explore.kit = (explore.kit + 1) % KITS.length; explore.line = tx("kit_word") + ": " + KITS[explore.kit][0]; }
+    }
+    paint(explore, null);
+    const [h, d] = describe(id, explore);
+    showInfo(h, d, explore, null);
+    return;
+  }
+  const [h, d] = describe(id, st);
+  showInfo(h, d, st, L[li].steps[si]);
+  const idx = tasks.findIndex(t => !t.done && taskMatchesControl(t, id));
+  if (idx >= 0) completeTask(idx, "click");
+  else if (tasks.length && !tasks.every(t => t.done)) {
+    const next = tasks.find(t => !t.done);
+    toast(tx("thats")(h.split(":")[0], describe(next.id, st)[0].split(":")[0], next.label.toLowerCase()));
+  }
+}
+
+// ------------------------------------------------------------------ Web MIDI
+const midiBtn = document.getElementById("midi"), midiLabel = document.getElementById("midi-label");
+let midiOn = false, lastBank = "A";
+function setMidiStatus(cls, label) { midiBtn.className = "chip " + cls; midiLabel.textContent = label; }
+async function connectMIDI() {
+  if (!navigator.requestMIDIAccess) { setMidiStatus("err", tx("no_webmidi")); toast(tx("webmidi_hint")); return; }
+  try {
+    const access = await navigator.requestMIDIAccess({ sysex: false });
+    const hook = () => {
+      const ins = [...access.inputs.values()];
+      const mpk = ins.find(i => /mpk/i.test(i.name)) || ins[0];
+      ins.forEach(i => i.onmidimessage = null);
+      if (!mpk) { midiOn = false; setMidiStatus("err", tx("no_device")); return; }
+      mpk.onmidimessage = ev => onMidi(ev.data);
+      midiOn = true; setMidiStatus("on", (/mpk/i.test(mpk.name) ? tx("connected") : mpk.name) + " · " + tx("listening"));
+      if (mode === "lessons") renderTasks();
+    };
+    access.onstatechange = hook; hook();
+  } catch (e) {
+    setMidiStatus("err", tx("blocked"));
+    toast(tx("blocked_hint"));
+  }
+}
+midiBtn.addEventListener("click", connectMIDI);
+
+let stickX = 0, stickY = 0;
+function moveStick(x, y) {
+  if (x != null) stickX = x; if (y != null) stickY = y;
+  layers.stick.setAttribute("transform", `translate(${stickX * 26} ${stickY * 26})`);
+  flashControl("joy");
+}
+// data: [status, d1, d2]
+function onMidi(data) {
+  const st = curState(), step = mode === "lessons" ? L[li].steps[si] : null;
+  const type = data[0] & 0xf0, ch = data[0] & 0x0f, d1 = data[1], d2 = data[2];
+  const satisfy = pred => {
+    if (mode !== "lessons") return false;
+    const idx = tasks.findIndex(t => !t.done && pred(t));
+    if (idx >= 0) completeTask(idx, "midi");
+    return idx >= 0;
+  };
+  const padEvent = (k, kind) => {
+    const i = k % 8, bank = k < 8 ? "A" : "B";
+    lastBank = bank;
+    if (mode === "explore") { explore.bank = bank; explore.mode = kind; paint(explore, null); }
+    flashControl("pad" + (i + 1), bank === "A" ? cssVar("--bank-a") : cssVar("--bank-b"));
+    layers.scr2.textContent = `${kind === "note" ? "pad" : kind.toUpperCase()} ${i + 1} · bank ${bank}`;
+    const bankOk = st.bank === bank;
+    // the specific pad move wins (and implies the BANK / CC / PROG CHANGE presses before it)
+    if (!satisfy(t => (t.id === "pad" + (i + 1) && bankOk) || t.id === "pads" || (t.id === "pads7" && i < 7)))
+      satisfy(t => (t.id === "bank" && bankOk) || (t.id === "cc" && kind === "cc") || (t.id === "pc" && kind === "pc"));
+  };
+  if (type === 0x90 && d2 > 0) {
+    if (ch === PAD_CH && d1 >= PAD_NOTE0 && d1 < PAD_NOTE0 + 16) return padEvent(d1 - PAD_NOTE0, "note");
+    pressKey(keySemi(d1), true);
+    layers.scr2.textContent = `note ${d1} vel ${d2}`;
+    satisfy(t => t.id === "keys");
+  } else if (type === 0x80 || (type === 0x90 && d2 === 0)) {
+    if (ch !== PAD_CH) { const semi = keySemi(d1); pressKey(semi, !!(step && (step.keys || []).includes(semi))); }
+  } else if (type === 0xb0) {
+    if (ch === PAD_CH && d1 >= PAD_CC0 && d1 < PAD_CC0 + 16) { if (d2 > 0) padEvent(d1 - PAD_CC0, "cc"); return; }
+    if (d1 >= KNOB_CC0 && d1 < KNOB_CC0 + 8) {
+      const k = d1 - KNOB_CC0, b = G["k" + (k + 1)];
+      flashControl("k" + (k + 1));
+      // mpkloop puts the knobs in relative mode (1..63 = up, 65..127 = down); absolute values turn the pointer directly
+      const rel = d2 < 64 ? d2 : d2 - 128;
+      b.ang = midiOn && Math.abs(rel) <= 16 ? Math.max(-150, Math.min(150, b.ang + rel * 10)) : d2 / 127 * 300 - 150;
+      layers.knobPtr[k].setAttribute("transform", `rotate(${b.ang} ${b.cx} ${b.cy})`);
+      layers.scr2.textContent = st.page != null ? PAGE_PARAMS[st.page][k] : "knob " + (k + 1);
+      satisfy(t => t.id === "k" + (k + 1) || t.id === "knobs");
+    } else if (d1 === 1) { moveStick(null, -d2 / 127); satisfy(t => t.id === "joy"); }
+    else if (d1 === 64) { flashControl("sustain"); satisfy(t => t.id === "sustain"); }
+  } else if (type === 0xe0) {
+    moveStick((((d2 << 7) | d1) - 8192) / 8192, null); satisfy(t => t.id === "joy");
+  } else if (type === 0xc0) {
+    if (d1 >= PAD_PC0 && d1 < PAD_PC0 + 16) padEvent(d1 - PAD_PC0, "pc");
+  } else if (type === 0xd0 && d1 > 40) {
+    flashControl("pads"); satisfy(t => /^pad\d$/.test(t.id) && /HOLD|SQUEEZE|HOUD|KNIJP/.test(t.label));
+  }
+}
+window.__onMidi = onMidi;
+
+// ------------------------------------------------------------------ lesson UI
+const rail = document.getElementById("rail");
+function buildRail() {
+  rail.innerHTML = "";
+  const sel = document.createElement("select"); sel.id = "lesson-select"; sel.setAttribute("aria-label", tx("lesson"));
+  L.forEach((l, i) => {
+    const a = document.createElement("a");
+    a.href = `#lesson-${i + 1}-step-1`;
+    a.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span class="title"></span><span class="prog"></span>`;
+    a.querySelector(".title").textContent = l.t;
+    a.addEventListener("click", ev => { ev.preventDefault(); go(i, 0, true); });
+    rail.appendChild(a);
+    const o = document.createElement("option"); o.value = i; o.textContent = `${i + 1}. ${l.t}`; sel.appendChild(o);
+  });
+  sel.addEventListener("change", () => go(+sel.value, 0, true));
+  rail.appendChild(sel);
+  const r = document.createElement("button"); r.className = "reset"; r.type = "button"; r.textContent = tx("reset");
+  r.addEventListener("click", () => { progress = new Set(); saveProgress(); renderStep(); document.querySelectorAll("#lessonlist li").forEach(el => el.classList.remove("done")); });
+  rail.appendChild(r);
+}
+function renderRail() {
+  rail.querySelectorAll("a").forEach((a, i) => {
+    a.setAttribute("aria-current", i === li ? "true" : "false");
+    const n = L[i].steps.filter((_, j) => progress.has(`${i}.${j}`)).length, tot = L[i].steps.length;
+    const p = a.querySelector(".prog"); p.textContent = n === tot ? "✓" : (n ? `${n}/${tot}` : ""); p.className = "prog" + (n === tot ? " full" : "");
+  });
+  const sel = document.getElementById("lesson-select"); if (sel) sel.value = li;
+}
+function renderTasks() {
+  const ul = document.getElementById("tasks");
+  if (!ul) return;
+  const st = stepState(li, si);
+  ul.innerHTML = "";
+  tasks.forEach((t, i) => {
+    const el = document.createElement("li");
+    el.className = t.done ? "done" : "";
+    const name = describe(t.id, st)[0];
+    el.innerHTML = `<span class="num">${t.done ? "✓" : i + 1}</span><span><span class="what"><b></b> · <span class="name"></span></span><br><span class="how">${t.done ? tx("done") : (midiOn ? tx("do_midi") : tx("do_click"))}</span></span>`;
+    el.querySelector("b").textContent = t.label; el.querySelector(".name").textContent = name;
+    el.addEventListener("click", () => onControl(t.id === "pads7" || t.id === "pads" ? "pad1" : t.id === "knobs" ? "k1" : t.id));
+    ul.appendChild(el);
+  });
+}
+function renderStepNav() {
+  const nav = document.getElementById("stepnav");
+  if (!nav) return;
+  const lesson = L[li], last = li === L.length - 1 && si === lesson.steps.length - 1;
+  const done = progress.has(`${li}.${si}`);
+  const nextLabel = done ? (last ? tx("all_done") : si === lesson.steps.length - 1 ? tx("next_lesson") : tx("next")) : (tasks.length ? tx("skip") : tx("done_next"));
+  nav.innerHTML = `
+    <button class="btn ghost" id="prev" type="button" ${li === 0 && si === 0 ? "disabled" : ""}>${tx("back")}</button>
+    <div class="dots">${lesson.steps.map((_, i) => `<i class="${progress.has(`${li}.${i}`) ? "done" : (i <= si ? "on" : "")}"></i>`).join("")}</div>
+    <button class="btn ${done ? "ok ready" : ""}" id="next" type="button" ${last && done ? "disabled" : ""}>${nextLabel}</button>`;
+  nav.querySelector("#prev").addEventListener("click", () => move(-1));
+  nav.querySelector("#next").addEventListener("click", () => { if (!tasks.length && !done) { progress.add(`${li}.${si}`); saveProgress(); } move(1); });
+}
+function renderStep() {
+  const lesson = L[li], step = lesson.steps[si];
+  tasks = step.hl.map(([id, label]) => ({ id, label, done: progress.has(`${li}.${si}`) }));
+  renderRail();
+  const card = document.getElementById("stepcard");
+  card.innerHTML = `
+    <span class="eyebrow">${tx("lesson")} ${li + 1} · ${lesson.t} · ${tx("step")} ${si + 1} ${tx("of")} ${lesson.steps.length}</span>
+    <h3></h3>
+    <div class="body">${step.b}</div>
+    ${tasks.length ? `<span class="eyebrow">${tx("your_moves")}</span><ul class="tasks" id="tasks"></ul>` : (step.comp ? `<p class="tip">${tx("comp_tip")}</p>` : "")}
+    <div class="nav" id="stepnav"></div>`;
+  card.querySelector("h3").textContent = step.t;
+  renderTasks(); renderStepNav();
+  const st = stepState(li, si);
+  paint(st, step);
+  const first = tasks[0];
+  if (first) { const [h, d] = describe(first.id, st); showInfo(h, d, st, step); }
+  else showInfo(tx("on_computer"), tx("on_computer_d"), st, step);
+  try { localStorage.setItem("mpkloop-lesson", JSON.stringify([li, si])); } catch (e) {}
+}
+function go(l, s, scroll) {
+  li = l; si = s; setMode("lessons"); renderStep();
+  const h = `#lesson-${l + 1}-step-${s + 1}`;
+  if (location.hash !== h) { try { history.replaceState(null, "", h); } catch (e) { try { location.hash = h; } catch (e2) {} } }
+  if (scroll) document.getElementById("station").scrollIntoView({ block: "start" });
+}
+function move(d) {
+  let l = li, s = si + d;
+  if (s >= L[l].steps.length) { if (l < L.length - 1) { l++; s = 0; } else return; }
+  if (s < 0) { if (l > 0) { l--; s = L[l].steps.length - 1; } else return; }
+  go(l, s);
+}
+function setMode(m) {
+  mode = m;
+  document.getElementById("mode-lessons").setAttribute("aria-pressed", m === "lessons");
+  document.getElementById("mode-explore").setAttribute("aria-pressed", m === "explore");
+  if (m === "explore") {
+    explore = Object.assign({}, DEFAULT, { bank: lastBank });
+    tasks = [];
+    paint(explore, null);
+    document.getElementById("stepcard").innerHTML = `<span class="eyebrow">${tx("mode_explore")}</span><h3>${tx("explore_h")}</h3>
+      <div class="body">${tx("explore_b")}</div>
+      <div class="nav"><button class="btn ghost" id="back" type="button">${tx("back_lessons")}</button></div>`;
+    document.getElementById("back").addEventListener("click", () => go(li, si));
+    showInfo(tx("pick"), tx("pick_d"), explore, null);
+  }
+}
+document.getElementById("mode-lessons").addEventListener("click", () => go(li, si));
+document.getElementById("mode-explore").addEventListener("click", () => setMode("explore"));
+document.getElementById("lang-en").addEventListener("click", () => setLang("en"));
+document.getElementById("lang-nl").addEventListener("click", () => setLang("nl"));
+document.addEventListener("keydown", e => {
+  if (mode !== "lessons" || (e.target.closest && e.target.closest("select, input, textarea, button"))) return;
+  if (e.key === "ArrowRight") move(1);
+  if (e.key === "ArrowLeft") move(-1);
+});
+function fromHash() {
+  const m = location.hash.match(/^#lesson-(\d+)(?:-step-(\d+))?$/);
+  if (!m || !L[+m[1] - 1]) return false;
+  const l = +m[1] - 1, s = m[2] ? Math.min(+m[2] - 1, L[l].steps.length - 1) : 0;
+  if (l !== li || s !== si || mode !== "lessons") go(l, s, true);
+  return true;
+}
+window.addEventListener("hashchange", fromHash);
+
+// ------------------------------------------------------------------ reference sections
+function buildRef() {
+  const list = document.getElementById("lessonlist");
+  list.innerHTML = "";
+  L.forEach((l, i) => {
+    const c = document.createElement("div"); c.className = "card";
+    c.innerHTML = `<span class="eyebrow">${tx("lesson")} ${i + 1}</span><h3></h3><ol></ol>`;
+    c.querySelector("h3").textContent = l.t;
+    l.steps.forEach((s, j) => {
+      const item = document.createElement("li"); item.dataset.key = `${i}.${j}`;
+      if (progress.has(item.dataset.key)) item.className = "done";
+      const a = document.createElement("a"); a.href = `#lesson-${i + 1}-step-${j + 1}`; a.textContent = s.t;
+      a.addEventListener("click", ev => { ev.preventDefault(); go(i, j, true); });
+      item.appendChild(a); c.querySelector("ol").appendChild(item);
+    });
+    list.appendChild(c);
+  });
+  const lib = document.getElementById("lib");
+  lib.innerHTML = "";
+  CATS.forEach(([name, sounds], i) => {
+    const c = document.createElement("div"); c.className = "card";
+    c.innerHTML = `<span class="padtag">${tx("padtag")} ${i + 1}</span><h3></h3><p class="note"></p><ul>${sounds.map((s, j) => `<li>${j + 1}. ${s}</li>`).join("")}</ul>`;
+    c.querySelector("h3").textContent = name; c.querySelector(".note").textContent = CAT_HINTS[lang][i];
+    lib.appendChild(c);
+  });
+  document.getElementById("kits").innerHTML = `<tr><th>${tx("th_kit")}</th>${[1, 2, 3, 4, 5, 6, 7, 8].map(n => `<th>${tx("pad")} ${n}</th>`).join("")}</tr>` +
+    KITS.map(([k, d]) => `<tr><td><b>${k}</b></td>${d.map(x => `<td>${x}</td>`).join("")}</tr>`).join("");
+}
+
+build(); applyLang(); buildRail(); buildRef();
+let start = [0, 0];
+try { const s = JSON.parse(localStorage.getItem("mpkloop-lesson")); if (Array.isArray(s) && L[s[0]] && L[s[0]].steps[s[1]]) start = s; } catch (e) {}
+if (!fromHash()) go(start[0], start[1]);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => mode === "lessons" ? renderStep() : paint(explore, null));
+</script>
+
+</body>
+</html>

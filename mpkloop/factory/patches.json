@@ -1,0 +1,2358 @@
+[
+ {
+  "cat": "Pads",
+  "name": "Saw Pad",
+  "osc": "saw2",
+  "amp": [
+   0.35,
+   0.6,
+   0.85,
+   1.4
+  ],
+  "fenv": [
+   0.8,
+   1.5,
+   0.4,
+   1.4
+  ],
+  "fenv_amt": 1.2,
+  "cutoff": 1400,
+  "reso": 0.15,
+  "gain": 0.32,
+  "detune": 9,
+  "sub": 0.25
+ },
+ {
+  "cat": "Pads",
+  "name": "Strings",
+  "osc": "super",
+  "amp": [
+   0.6,
+   0.5,
+   0.9,
+   1.2
+  ],
+  "fenv": [
+   0.8,
+   1.0,
+   0.6,
+   1.0
+  ],
+  "fenv_amt": 0.6,
+  "cutoff": 2200,
+  "reso": 0.05,
+  "gain": 0.3,
+  "detune": 12,
+  "vib": 0.05
+ },
+ {
+  "cat": "Pads",
+  "name": "Glass Pad",
+  "osc": "fm",
+  "amp": [
+   0.5,
+   1.0,
+   0.8,
+   1.6
+  ],
+  "fenv": [
+   0.5,
+   2.0,
+   0.5,
+   1.5
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 9000,
+  "reso": 0.0,
+  "gain": 0.3,
+  "ratio": 2.0,
+  "index": 1.2
+ },
+ {
+  "cat": "Pads",
+  "name": "Dark Pad",
+  "osc": "pulse",
+  "amp": [
+   0.8,
+   1.0,
+   0.85,
+   2.0
+  ],
+  "fenv": [
+   1.5,
+   2.0,
+   0.3,
+   2.0
+  ],
+  "fenv_amt": 1.0,
+  "cutoff": 500,
+  "reso": 0.2,
+  "gain": 0.32,
+  "pw": 0.35,
+  "detune": 7,
+  "sub": 0.3
+ },
+ {
+  "cat": "Pads",
+  "name": "Sweep Pad",
+  "osc": "saw2",
+  "amp": [
+   0.4,
+   1.0,
+   0.8,
+   1.5
+  ],
+  "fenv": [
+   2.5,
+   2.5,
+   0.2,
+   2.0
+  ],
+  "fenv_amt": 2.5,
+  "cutoff": 250,
+  "reso": 0.5,
+  "gain": 0.28,
+  "detune": 10
+ },
+ {
+  "cat": "Pads",
+  "name": "Warm Pad",
+  "osc": "tri",
+  "amp": [
+   0.5,
+   0.8,
+   0.9,
+   1.8
+  ],
+  "fenv": [
+   0.5,
+   1.0,
+   0.8,
+   1.5
+  ],
+  "fenv_amt": 0.4,
+  "cutoff": 1800,
+  "reso": 0.0,
+  "gain": 0.36,
+  "detune": 8,
+  "sub": 0.2
+ },
+ {
+  "cat": "Pads",
+  "name": "Super Pad",
+  "osc": "super",
+  "amp": [
+   0.3,
+   0.8,
+   0.85,
+   1.6
+  ],
+  "fenv": [
+   0.3,
+   1.5,
+   0.5,
+   1.5
+  ],
+  "fenv_amt": 0.8,
+  "cutoff": 2600,
+  "reso": 0.1,
+  "gain": 0.26,
+  "detune": 18
+ },
+ {
+  "cat": "Pads",
+  "name": "Hollow Pad",
+  "osc": "pulse",
+  "amp": [
+   0.6,
+   1.0,
+   0.85,
+   1.6
+  ],
+  "fenv": [
+   0.6,
+   1.5,
+   0.5,
+   1.5
+  ],
+  "fenv_amt": 0.6,
+  "cutoff": 1200,
+  "reso": 0.3,
+  "gain": 0.32,
+  "pw": 0.12,
+  "detune": 6
+ },
+ {
+  "cat": "Pads",
+  "name": "Fifths Pad",
+  "osc": "saw2",
+  "amp": [
+   0.5,
+   0.8,
+   0.85,
+   1.6
+  ],
+  "fenv": [
+   0.8,
+   1.2,
+   0.5,
+   1.5
+  ],
+  "fenv_amt": 1.0,
+  "cutoff": 1100,
+  "reso": 0.15,
+  "gain": 0.26,
+  "detune": 8,
+  "intervals": [
+   0,
+   7
+  ]
+ },
+ {
+  "cat": "Pads",
+  "name": "Octave Pad",
+  "osc": "saw1",
+  "amp": [
+   0.4,
+   0.8,
+   0.85,
+   1.4
+  ],
+  "fenv": [
+   0.5,
+   1.2,
+   0.6,
+   1.4
+  ],
+  "fenv_amt": 0.8,
+  "cutoff": 1600,
+  "reso": 0.1,
+  "gain": 0.28,
+  "detune": 6,
+  "intervals": [
+   0,
+   12
+  ]
+ },
+ {
+  "cat": "Pads",
+  "name": "Breath Pad",
+  "osc": "sine",
+  "amp": [
+   0.7,
+   1.0,
+   0.85,
+   1.8
+  ],
+  "fenv": [
+   0.7,
+   1.0,
+   0.8,
+   1.5
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 6000,
+  "reso": 0.0,
+  "gain": 0.4,
+  "noise": 0.12,
+  "vib": 0.08,
+  "detune": 5
+ },
+ {
+  "cat": "Pads",
+  "name": "Bright Pad",
+  "osc": "super",
+  "amp": [
+   0.2,
+   0.6,
+   0.9,
+   1.2
+  ],
+  "fenv": [
+   0.2,
+   1.0,
+   0.7,
+   1.2
+  ],
+  "fenv_amt": 0.5,
+  "cutoff": 5000,
+  "reso": 0.05,
+  "gain": 0.24,
+  "detune": 14,
+  "vib": 0.04
+ },
+ {
+  "cat": "Pads",
+  "name": "Drone",
+  "osc": "saw2",
+  "amp": [
+   1.5,
+   2.0,
+   1.0,
+   3.0
+  ],
+  "fenv": [
+   3.0,
+   3.0,
+   0.3,
+   3.0
+  ],
+  "fenv_amt": 1.5,
+  "cutoff": 350,
+  "reso": 0.4,
+  "gain": 0.3,
+  "detune": 4,
+  "sub": 0.5
+ },
+ {
+  "cat": "Pads",
+  "name": "Dark Drone",
+  "osc": "pulse",
+  "amp": [
+   2.0,
+   2.0,
+   1.0,
+   4.0
+  ],
+  "fenv": [
+   4.0,
+   4.0,
+   0.2,
+   4.0
+  ],
+  "fenv_amt": 0.8,
+  "cutoff": 240,
+  "reso": 0.55,
+  "gain": 0.32,
+  "pw": 0.3,
+  "detune": 3,
+  "sub": 0.6
+ },
+ {
+  "cat": "Pads",
+  "name": "Shimmer",
+  "osc": "fm",
+  "amp": [
+   0.8,
+   1.5,
+   0.8,
+   2.5
+  ],
+  "fenv": [
+   0.8,
+   2.0,
+   0.5,
+   2.0
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.26,
+  "ratio": 3.0,
+  "index": 0.9,
+  "vib": 0.06
+ },
+ {
+  "cat": "Keys",
+  "name": "FM Keys",
+  "osc": "fm",
+  "amp": [
+   0.002,
+   1.4,
+   0.25,
+   0.5
+  ],
+  "fenv": [
+   0.002,
+   0.9,
+   0.15,
+   0.5
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 9000,
+  "reso": 0.0,
+  "gain": 0.38,
+  "ratio": 1.0,
+  "index": 2.6
+ },
+ {
+  "cat": "Keys",
+  "name": "E-Piano",
+  "osc": "fm",
+  "amp": [
+   0.002,
+   1.8,
+   0.3,
+   0.5
+  ],
+  "fenv": [
+   0.002,
+   0.6,
+   0.1,
+   0.4
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 7000,
+  "reso": 0.0,
+  "gain": 0.4,
+  "ratio": 1.0,
+  "index": 1.6
+ },
+ {
+  "cat": "Keys",
+  "name": "Clav",
+  "osc": "pulse",
+  "amp": [
+   0.001,
+   0.4,
+   0.2,
+   0.1
+  ],
+  "fenv": [
+   0.001,
+   0.15,
+   0.1,
+   0.1
+  ],
+  "fenv_amt": 2.5,
+  "cutoff": 900,
+  "reso": 0.3,
+  "gain": 0.35,
+  "pw": 0.15
+ },
+ {
+  "cat": "Keys",
+  "name": "Toy Piano",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   0.8,
+   0.0,
+   0.6
+  ],
+  "fenv": [
+   0.001,
+   0.3,
+   0.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 10000,
+  "reso": 0.0,
+  "gain": 0.3,
+  "ratio": 4.0,
+  "index": 1.4
+ },
+ {
+  "cat": "Keys",
+  "name": "Lo-Fi Keys",
+  "osc": "tri",
+  "amp": [
+   0.003,
+   1.2,
+   0.3,
+   0.4
+  ],
+  "fenv": [
+   0.002,
+   0.8,
+   0.2,
+   0.3
+  ],
+  "fenv_amt": 1.0,
+  "cutoff": 1200,
+  "reso": 0.1,
+  "gain": 0.4,
+  "detune": 6,
+  "vib": 0.08,
+  "noise": 0.02
+ },
+ {
+  "cat": "Keys",
+  "name": "Tine Piano",
+  "osc": "fm",
+  "amp": [
+   0.002,
+   2.2,
+   0.2,
+   0.6
+  ],
+  "fenv": [
+   0.002,
+   0.5,
+   0.1,
+   0.4
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 8000,
+  "reso": 0.0,
+  "gain": 0.4,
+  "ratio": 2.0,
+  "index": 1.1
+ },
+ {
+  "cat": "Keys",
+  "name": "Wurly",
+  "osc": "fm",
+  "amp": [
+   0.002,
+   1.2,
+   0.4,
+   0.4
+  ],
+  "fenv": [
+   0.002,
+   0.4,
+   0.2,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 5000,
+  "reso": 0.0,
+  "gain": 0.42,
+  "ratio": 1.0,
+  "index": 2.0,
+  "vib": 0.03
+ },
+ {
+  "cat": "Keys",
+  "name": "Soft Keys",
+  "osc": "tri",
+  "amp": [
+   0.005,
+   1.5,
+   0.2,
+   0.6
+  ],
+  "fenv": [
+   0.005,
+   0.8,
+   0.1,
+   0.4
+  ],
+  "fenv_amt": 0.8,
+  "cutoff": 1500,
+  "reso": 0.0,
+  "gain": 0.42,
+  "sub": 0.2
+ },
+ {
+  "cat": "Keys",
+  "name": "Harpsichord",
+  "osc": "pulse",
+  "amp": [
+   0.001,
+   0.6,
+   0.0,
+   0.2
+  ],
+  "fenv": [
+   0.001,
+   0.3,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 1.5,
+  "cutoff": 3000,
+  "reso": 0.1,
+  "gain": 0.3,
+  "pw": 0.1,
+  "intervals": [
+   0,
+   12
+  ]
+ },
+ {
+  "cat": "Keys",
+  "name": "Music Box",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   1.0,
+   0.0,
+   0.8
+  ],
+  "fenv": [
+   0.001,
+   0.2,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.28,
+  "ratio": 3.0,
+  "index": 1.0
+ },
+ {
+  "cat": "Keys",
+  "name": "Synth Piano",
+  "osc": "saw2",
+  "amp": [
+   0.002,
+   1.5,
+   0.1,
+   0.4
+  ],
+  "fenv": [
+   0.002,
+   0.7,
+   0.1,
+   0.3
+  ],
+  "fenv_amt": 2.0,
+  "cutoff": 700,
+  "reso": 0.1,
+  "gain": 0.34,
+  "detune": 5
+ },
+ {
+  "cat": "Keys",
+  "name": "Celesta",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   1.6,
+   0.0,
+   1.0
+  ],
+  "fenv": [
+   0.001,
+   0.2,
+   0.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.26,
+  "ratio": 4.0,
+  "index": 0.9
+ },
+ {
+  "cat": "Keys",
+  "name": "Dirty Keys",
+  "osc": "square",
+  "amp": [
+   0.002,
+   1.0,
+   0.3,
+   0.3
+  ],
+  "fenv": [
+   0.002,
+   0.5,
+   0.2,
+   0.3
+  ],
+  "fenv_amt": 1.5,
+  "cutoff": 1400,
+  "reso": 0.35,
+  "gain": 0.3,
+  "detune": 12,
+  "noise": 0.03
+ },
+ {
+  "cat": "Keys",
+  "name": "Glass Keys",
+  "osc": "fm",
+  "amp": [
+   0.002,
+   2.0,
+   0.1,
+   0.9
+  ],
+  "fenv": [
+   0.002,
+   1.0,
+   0.1,
+   0.5
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 10000,
+  "reso": 0.0,
+  "gain": 0.3,
+  "ratio": 2.0,
+  "index": 2.4
+ },
+ {
+  "cat": "Bass",
+  "name": "Sub Bass",
+  "osc": "bass",
+  "amp": [
+   0.003,
+   0.35,
+   0.7,
+   0.12
+  ],
+  "fenv": [
+   0.002,
+   0.18,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 2.5,
+  "cutoff": 320,
+  "reso": 0.25,
+  "gain": 0.5
+ },
+ {
+  "cat": "Bass",
+  "name": "Acid",
+  "osc": "saw1",
+  "amp": [
+   0.001,
+   0.3,
+   0.55,
+   0.08
+  ],
+  "fenv": [
+   0.001,
+   0.22,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 4.5,
+  "cutoff": 220,
+  "reso": 0.82,
+  "gain": 0.38
+ },
+ {
+  "cat": "Bass",
+  "name": "Reese",
+  "osc": "saw2",
+  "amp": [
+   0.01,
+   0.5,
+   0.9,
+   0.2
+  ],
+  "fenv": [
+   0.01,
+   0.5,
+   0.6,
+   0.2
+  ],
+  "fenv_amt": 0.5,
+  "cutoff": 400,
+  "reso": 0.15,
+  "gain": 0.4,
+  "detune": 22
+ },
+ {
+  "cat": "Bass",
+  "name": "FM Bass",
+  "osc": "fm",
+  "amp": [
+   0.002,
+   0.5,
+   0.4,
+   0.12
+  ],
+  "fenv": [
+   0.002,
+   0.25,
+   0.1,
+   0.1
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 3000,
+  "reso": 0.0,
+  "gain": 0.45,
+  "ratio": 1.0,
+  "index": 2.2
+ },
+ {
+  "cat": "Bass",
+  "name": "Pluck Bass",
+  "osc": "square",
+  "amp": [
+   0.001,
+   0.3,
+   0.0,
+   0.1
+  ],
+  "fenv": [
+   0.001,
+   0.12,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 3.0,
+  "cutoff": 250,
+  "reso": 0.3,
+  "gain": 0.45,
+  "sub": 0.4
+ },
+ {
+  "cat": "Bass",
+  "name": "808 Bass",
+  "osc": "sine",
+  "amp": [
+   0.002,
+   1.2,
+   0.6,
+   0.3
+  ],
+  "fenv": [
+   0.002,
+   0.1,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 1.0,
+  "cutoff": 400,
+  "reso": 0.0,
+  "gain": 0.55,
+  "sub": 0.3
+ },
+ {
+  "cat": "Bass",
+  "name": "Square Bass",
+  "osc": "square",
+  "amp": [
+   0.002,
+   0.4,
+   0.7,
+   0.1
+  ],
+  "fenv": [
+   0.002,
+   0.2,
+   0.1,
+   0.1
+  ],
+  "fenv_amt": 2.0,
+  "cutoff": 450,
+  "reso": 0.2,
+  "gain": 0.42,
+  "sub": 0.3
+ },
+ {
+  "cat": "Bass",
+  "name": "Wobble",
+  "osc": "saw2",
+  "amp": [
+   0.01,
+   0.3,
+   0.9,
+   0.15
+  ],
+  "fenv": [
+   0.01,
+   0.4,
+   0.3,
+   0.2
+  ],
+  "fenv_amt": 3.0,
+  "cutoff": 300,
+  "reso": 0.6,
+  "gain": 0.38,
+  "detune": 15,
+  "vib": 0.0
+ },
+ {
+  "cat": "Bass",
+  "name": "Moog Bass",
+  "osc": "saw1",
+  "amp": [
+   0.002,
+   0.25,
+   0.5,
+   0.1
+  ],
+  "fenv": [
+   0.002,
+   0.15,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 3.0,
+  "cutoff": 350,
+  "reso": 0.45,
+  "gain": 0.45,
+  "sub": 0.25
+ },
+ {
+  "cat": "Bass",
+  "name": "Rubber Bass",
+  "osc": "pulse",
+  "amp": [
+   0.002,
+   0.3,
+   0.3,
+   0.1
+  ],
+  "fenv": [
+   0.002,
+   0.1,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 3.5,
+  "cutoff": 280,
+  "reso": 0.5,
+  "gain": 0.42,
+  "pw": 0.3,
+  "sub": 0.3
+ },
+ {
+  "cat": "Bass",
+  "name": "Growl",
+  "osc": "saw2",
+  "amp": [
+   0.005,
+   0.4,
+   0.8,
+   0.15
+  ],
+  "fenv": [
+   0.005,
+   0.3,
+   0.4,
+   0.2
+  ],
+  "fenv_amt": 2.0,
+  "cutoff": 500,
+  "reso": 0.7,
+  "gain": 0.36,
+  "detune": 30,
+  "noise": 0.02
+ },
+ {
+  "cat": "Bass",
+  "name": "Deep FM",
+  "osc": "fm",
+  "amp": [
+   0.002,
+   0.8,
+   0.5,
+   0.2
+  ],
+  "fenv": [
+   0.002,
+   0.3,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 2000,
+  "reso": 0.0,
+  "gain": 0.5,
+  "ratio": 0.5,
+  "index": 1.8
+ },
+ {
+  "cat": "Bass",
+  "name": "Organ Bass",
+  "osc": "organ",
+  "amp": [
+   0.003,
+   0.1,
+   1.0,
+   0.06
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 2500,
+  "reso": 0.0,
+  "gain": 0.3
+ },
+ {
+  "cat": "Bass",
+  "name": "Chip Bass",
+  "osc": "square",
+  "amp": [
+   0.001,
+   0.1,
+   0.9,
+   0.05
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 4000,
+  "reso": 0.0,
+  "gain": 0.3,
+  "intervals": [
+   0,
+   12
+  ]
+ },
+ {
+  "cat": "Bass",
+  "name": "Dub Bass",
+  "osc": "sine",
+  "amp": [
+   0.01,
+   0.5,
+   0.8,
+   0.25
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   0.2,
+   0.2
+  ],
+  "fenv_amt": 1.5,
+  "cutoff": 260,
+  "reso": 0.1,
+  "gain": 0.55,
+  "sub": 0.4
+ },
+ {
+  "cat": "Leads",
+  "name": "Square Lead",
+  "osc": "square",
+  "amp": [
+   0.005,
+   0.25,
+   0.75,
+   0.25
+  ],
+  "fenv": [
+   0.005,
+   0.3,
+   0.3,
+   0.3
+  ],
+  "fenv_amt": 1.5,
+  "cutoff": 2600,
+  "reso": 0.3,
+  "gain": 0.3,
+  "detune": 4
+ },
+ {
+  "cat": "Leads",
+  "name": "Saw Lead",
+  "osc": "super",
+  "amp": [
+   0.005,
+   0.3,
+   0.8,
+   0.3
+  ],
+  "fenv": [
+   0.005,
+   0.4,
+   0.5,
+   0.3
+  ],
+  "fenv_amt": 1.2,
+  "cutoff": 2500,
+  "reso": 0.2,
+  "gain": 0.26,
+  "detune": 8,
+  "vib": 0.1
+ },
+ {
+  "cat": "Leads",
+  "name": "Pulse Lead",
+  "osc": "pulse",
+  "amp": [
+   0.005,
+   0.3,
+   0.8,
+   0.25
+  ],
+  "fenv": [
+   0.005,
+   0.3,
+   0.4,
+   0.3
+  ],
+  "fenv_amt": 1.0,
+  "cutoff": 3000,
+  "reso": 0.25,
+  "gain": 0.32,
+  "pw": 0.22,
+  "detune": 3,
+  "vib": 0.1
+ },
+ {
+  "cat": "Leads",
+  "name": "Chip Lead",
+  "osc": "square",
+  "amp": [
+   0.001,
+   0.05,
+   0.9,
+   0.05
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 16000,
+  "reso": 0.0,
+  "gain": 0.22
+ },
+ {
+  "cat": "Leads",
+  "name": "Fifth Lead",
+  "osc": "saw1",
+  "amp": [
+   0.005,
+   0.3,
+   0.75,
+   0.3
+  ],
+  "fenv": [
+   0.005,
+   0.35,
+   0.4,
+   0.3
+  ],
+  "fenv_amt": 1.5,
+  "cutoff": 1800,
+  "reso": 0.3,
+  "gain": 0.3,
+  "intervals": [
+   0,
+   7
+  ]
+ },
+ {
+  "cat": "Leads",
+  "name": "Sine Lead",
+  "osc": "sine",
+  "amp": [
+   0.01,
+   0.2,
+   0.9,
+   0.2
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 8000,
+  "reso": 0.0,
+  "gain": 0.5,
+  "vib": 0.15
+ },
+ {
+  "cat": "Leads",
+  "name": "Screamer",
+  "osc": "saw2",
+  "amp": [
+   0.005,
+   0.2,
+   0.9,
+   0.2
+  ],
+  "fenv": [
+   0.005,
+   0.5,
+   0.6,
+   0.3
+  ],
+  "fenv_amt": 2.0,
+  "cutoff": 1500,
+  "reso": 0.75,
+  "gain": 0.26,
+  "detune": 12,
+  "vib": 0.12
+ },
+ {
+  "cat": "Leads",
+  "name": "Hoover",
+  "osc": "super",
+  "amp": [
+   0.01,
+   0.4,
+   0.85,
+   0.4
+  ],
+  "fenv": [
+   0.01,
+   0.5,
+   0.5,
+   0.4
+  ],
+  "fenv_amt": 1.0,
+  "cutoff": 2000,
+  "reso": 0.3,
+  "gain": 0.24,
+  "detune": 35,
+  "sub": 0.3
+ },
+ {
+  "cat": "Leads",
+  "name": "Whistle",
+  "osc": "sine",
+  "amp": [
+   0.02,
+   0.2,
+   0.9,
+   0.15
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 10000,
+  "reso": 0.0,
+  "gain": 0.45,
+  "vib": 0.25,
+  "noise": 0.03,
+  "intervals": [
+   12
+  ]
+ },
+ {
+  "cat": "Leads",
+  "name": "Sync Lead",
+  "osc": "pulse",
+  "amp": [
+   0.005,
+   0.3,
+   0.8,
+   0.2
+  ],
+  "fenv": [
+   0.005,
+   0.6,
+   0.2,
+   0.3
+  ],
+  "fenv_amt": 3.0,
+  "cutoff": 800,
+  "reso": 0.5,
+  "gain": 0.3,
+  "pw": 0.08,
+  "detune": 5
+ },
+ {
+  "cat": "Leads",
+  "name": "Soft Lead",
+  "osc": "tri",
+  "amp": [
+   0.02,
+   0.3,
+   0.85,
+   0.3
+  ],
+  "fenv": [
+   0.02,
+   0.4,
+   0.5,
+   0.3
+  ],
+  "fenv_amt": 0.8,
+  "cutoff": 2500,
+  "reso": 0.1,
+  "gain": 0.4,
+  "detune": 6,
+  "vib": 0.1
+ },
+ {
+  "cat": "Leads",
+  "name": "Octave Lead",
+  "osc": "saw1",
+  "amp": [
+   0.005,
+   0.3,
+   0.8,
+   0.25
+  ],
+  "fenv": [
+   0.005,
+   0.4,
+   0.4,
+   0.3
+  ],
+  "fenv_amt": 1.2,
+  "cutoff": 2200,
+  "reso": 0.25,
+  "gain": 0.26,
+  "intervals": [
+   0,
+   12
+  ],
+  "detune": 4
+ },
+ {
+  "cat": "Leads",
+  "name": "FM Lead",
+  "osc": "fm",
+  "amp": [
+   0.005,
+   0.4,
+   0.7,
+   0.3
+  ],
+  "fenv": [
+   0.005,
+   0.5,
+   0.3,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 9000,
+  "reso": 0.0,
+  "gain": 0.34,
+  "ratio": 2.0,
+  "index": 2.0,
+  "vib": 0.1
+ },
+ {
+  "cat": "Leads",
+  "name": "Theremin",
+  "osc": "sine",
+  "amp": [
+   0.15,
+   0.3,
+   0.9,
+   0.3
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 6000,
+  "reso": 0.0,
+  "gain": 0.5,
+  "vib": 0.3
+ },
+ {
+  "cat": "Leads",
+  "name": "Buzz Lead",
+  "osc": "saw2",
+  "amp": [
+   0.002,
+   0.2,
+   0.9,
+   0.15
+  ],
+  "fenv": [
+   0.002,
+   0.2,
+   0.8,
+   0.2
+  ],
+  "fenv_amt": 0.5,
+  "cutoff": 4000,
+  "reso": 0.2,
+  "gain": 0.28,
+  "detune": 25,
+  "intervals": [
+   0,
+   0
+  ]
+ },
+ {
+  "cat": "Plucks",
+  "name": "Pluck",
+  "osc": "saw1",
+  "amp": [
+   0.001,
+   0.35,
+   0.0,
+   0.25
+  ],
+  "fenv": [
+   0.001,
+   0.16,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 4.0,
+  "cutoff": 300,
+  "reso": 0.35,
+  "gain": 0.45,
+  "sub": 0.15
+ },
+ {
+  "cat": "Plucks",
+  "name": "Bright Pluck",
+  "osc": "super",
+  "amp": [
+   0.001,
+   0.45,
+   0.0,
+   0.35
+  ],
+  "fenv": [
+   0.001,
+   0.25,
+   0.0,
+   0.3
+  ],
+  "fenv_amt": 3.0,
+  "cutoff": 600,
+  "reso": 0.2,
+  "gain": 0.38,
+  "detune": 10
+ },
+ {
+  "cat": "Plucks",
+  "name": "Kalimba",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   0.9,
+   0.0,
+   0.6
+  ],
+  "fenv": [
+   0.001,
+   0.08,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 9000,
+  "reso": 0.0,
+  "gain": 0.4,
+  "ratio": 6.0,
+  "index": 0.8
+ },
+ {
+  "cat": "Plucks",
+  "name": "Harp",
+  "osc": "tri",
+  "amp": [
+   0.001,
+   1.5,
+   0.0,
+   1.0
+  ],
+  "fenv": [
+   0.001,
+   0.4,
+   0.0,
+   0.5
+  ],
+  "fenv_amt": 2.0,
+  "cutoff": 800,
+  "reso": 0.0,
+  "gain": 0.45
+ },
+ {
+  "cat": "Plucks",
+  "name": "Chord Stab",
+  "osc": "saw1",
+  "amp": [
+   0.002,
+   0.3,
+   0.0,
+   0.2
+  ],
+  "fenv": [
+   0.001,
+   0.2,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 3.0,
+  "cutoff": 500,
+  "reso": 0.25,
+  "gain": 0.45,
+  "intervals": [
+   0,
+   4,
+   7
+  ]
+ },
+ {
+  "cat": "Plucks",
+  "name": "Minor Stab",
+  "osc": "saw1",
+  "amp": [
+   0.002,
+   0.3,
+   0.0,
+   0.2
+  ],
+  "fenv": [
+   0.001,
+   0.2,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 3.0,
+  "cutoff": 500,
+  "reso": 0.25,
+  "gain": 0.45,
+  "intervals": [
+   0,
+   3,
+   7
+  ]
+ },
+ {
+  "cat": "Plucks",
+  "name": "Guitar",
+  "osc": "pulse",
+  "amp": [
+   0.001,
+   0.8,
+   0.0,
+   0.4
+  ],
+  "fenv": [
+   0.001,
+   0.2,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 2.5,
+  "cutoff": 700,
+  "reso": 0.15,
+  "gain": 0.4,
+  "pw": 0.25
+ },
+ {
+  "cat": "Plucks",
+  "name": "Nylon",
+  "osc": "tri",
+  "amp": [
+   0.001,
+   1.0,
+   0.0,
+   0.5
+  ],
+  "fenv": [
+   0.001,
+   0.15,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 2.0,
+  "cutoff": 1200,
+  "reso": 0.1,
+  "gain": 0.45,
+  "noise": 0.01
+ },
+ {
+  "cat": "Plucks",
+  "name": "Banjo",
+  "osc": "saw1",
+  "amp": [
+   0.001,
+   0.4,
+   0.0,
+   0.2
+  ],
+  "fenv": [
+   0.001,
+   0.08,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 3.5,
+  "cutoff": 1500,
+  "reso": 0.3,
+  "gain": 0.4,
+  "intervals": [
+   0,
+   12
+  ]
+ },
+ {
+  "cat": "Plucks",
+  "name": "Koto",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   0.7,
+   0.0,
+   0.5
+  ],
+  "fenv": [
+   0.001,
+   0.1,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 9000,
+  "reso": 0.0,
+  "gain": 0.4,
+  "ratio": 3.0,
+  "index": 1.3
+ },
+ {
+  "cat": "Plucks",
+  "name": "Pizzicato",
+  "osc": "saw2",
+  "amp": [
+   0.001,
+   0.25,
+   0.0,
+   0.15
+  ],
+  "fenv": [
+   0.001,
+   0.1,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 2.5,
+  "cutoff": 600,
+  "reso": 0.2,
+  "gain": 0.42,
+  "detune": 8
+ },
+ {
+  "cat": "Plucks",
+  "name": "Trance Pluck",
+  "osc": "super",
+  "amp": [
+   0.001,
+   0.3,
+   0.0,
+   0.25
+  ],
+  "fenv": [
+   0.001,
+   0.2,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 4.0,
+  "cutoff": 400,
+  "reso": 0.3,
+  "gain": 0.36,
+  "detune": 16
+ },
+ {
+  "cat": "Plucks",
+  "name": "Steel Drum",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   0.6,
+   0.0,
+   0.5
+  ],
+  "fenv": [
+   0.001,
+   0.15,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 9000,
+  "reso": 0.0,
+  "gain": 0.4,
+  "ratio": 2.0,
+  "index": 2.2
+ },
+ {
+  "cat": "Plucks",
+  "name": "Square Pluck",
+  "osc": "square",
+  "amp": [
+   0.001,
+   0.3,
+   0.0,
+   0.2
+  ],
+  "fenv": [
+   0.001,
+   0.15,
+   0.0,
+   0.15
+  ],
+  "fenv_amt": 3.0,
+  "cutoff": 500,
+  "reso": 0.3,
+  "gain": 0.4
+ },
+ {
+  "cat": "Plucks",
+  "name": "Sus Chord",
+  "osc": "saw1",
+  "amp": [
+   0.002,
+   0.4,
+   0.0,
+   0.3
+  ],
+  "fenv": [
+   0.001,
+   0.25,
+   0.0,
+   0.25
+  ],
+  "fenv_amt": 2.5,
+  "cutoff": 600,
+  "reso": 0.2,
+  "gain": 0.42,
+  "intervals": [
+   0,
+   5,
+   7
+  ]
+ },
+ {
+  "cat": "Bells",
+  "name": "Bell",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   2.6,
+   0.0,
+   2.6
+  ],
+  "fenv": [
+   0.001,
+   1.6,
+   0.0,
+   1.6
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.3,
+  "ratio": 3.5,
+  "index": 4.0
+ },
+ {
+  "cat": "Bells",
+  "name": "Marimba",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   0.5,
+   0.0,
+   0.4
+  ],
+  "fenv": [
+   0.001,
+   0.06,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 6000,
+  "reso": 0.0,
+  "gain": 0.45,
+  "ratio": 4.0,
+  "index": 1.0
+ },
+ {
+  "cat": "Bells",
+  "name": "Vibes",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   2.5,
+   0.0,
+   1.5
+  ],
+  "fenv": [
+   0.001,
+   0.2,
+   0.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 9000,
+  "reso": 0.0,
+  "gain": 0.35,
+  "ratio": 4.0,
+  "index": 0.6,
+  "vib": 0.12
+ },
+ {
+  "cat": "Bells",
+  "name": "Glockenspiel",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   1.4,
+   0.0,
+   1.0
+  ],
+  "fenv": [
+   0.001,
+   0.3,
+   0.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.25,
+  "ratio": 5.4,
+  "index": 1.5
+ },
+ {
+  "cat": "Bells",
+  "name": "Crystal",
+  "osc": "fm",
+  "amp": [
+   0.3,
+   2.0,
+   0.4,
+   2.5
+  ],
+  "fenv": [
+   0.3,
+   2.0,
+   0.2,
+   2.0
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.25,
+  "ratio": 7.0,
+  "index": 2.5
+ },
+ {
+  "cat": "Bells",
+  "name": "Tubular",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   3.5,
+   0.0,
+   3.0
+  ],
+  "fenv": [
+   0.001,
+   2.0,
+   0.0,
+   2.0
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.28,
+  "ratio": 2.76,
+  "index": 3.0
+ },
+ {
+  "cat": "Bells",
+  "name": "Xylophone",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   0.35,
+   0.0,
+   0.3
+  ],
+  "fenv": [
+   0.001,
+   0.05,
+   0.0,
+   0.1
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 9000,
+  "reso": 0.0,
+  "gain": 0.45,
+  "ratio": 3.0,
+  "index": 0.8
+ },
+ {
+  "cat": "Bells",
+  "name": "Gamelan",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   1.8,
+   0.0,
+   1.5
+  ],
+  "fenv": [
+   0.001,
+   0.8,
+   0.0,
+   0.8
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.3,
+  "ratio": 1.41,
+  "index": 3.5
+ },
+ {
+  "cat": "Bells",
+  "name": "Chime",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   2.0,
+   0.0,
+   2.0
+  ],
+  "fenv": [
+   0.001,
+   1.0,
+   0.0,
+   1.0
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 14000,
+  "reso": 0.0,
+  "gain": 0.24,
+  "ratio": 6.0,
+  "index": 1.2
+ },
+ {
+  "cat": "Bells",
+  "name": "Soft Bell",
+  "osc": "fm",
+  "amp": [
+   0.005,
+   1.8,
+   0.1,
+   1.5
+  ],
+  "fenv": [
+   0.005,
+   0.5,
+   0.0,
+   0.5
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 8000,
+  "reso": 0.0,
+  "gain": 0.34,
+  "ratio": 2.0,
+  "index": 1.0
+ },
+ {
+  "cat": "Bells",
+  "name": "Dream Bell",
+  "osc": "fm",
+  "amp": [
+   0.2,
+   2.5,
+   0.3,
+   2.5
+  ],
+  "fenv": [
+   0.2,
+   1.5,
+   0.2,
+   1.5
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 12000,
+  "reso": 0.0,
+  "gain": 0.26,
+  "ratio": 3.0,
+  "index": 1.8,
+  "vib": 0.05
+ },
+ {
+  "cat": "Bells",
+  "name": "Bottle",
+  "osc": "sine",
+  "amp": [
+   0.002,
+   0.8,
+   0.0,
+   0.6
+  ],
+  "fenv": [
+   0.002,
+   0.2,
+   0.0,
+   0.2
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 10000,
+  "reso": 0.0,
+  "gain": 0.45,
+  "noise": 0.06,
+  "intervals": [
+   0,
+   12
+  ]
+ },
+ {
+  "cat": "Bells",
+  "name": "Ice",
+  "osc": "fm",
+  "amp": [
+   0.001,
+   1.0,
+   0.0,
+   1.0
+  ],
+  "fenv": [
+   0.001,
+   0.3,
+   0.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 14000,
+  "reso": 0.0,
+  "gain": 0.22,
+  "ratio": 9.0,
+  "index": 1.0
+ },
+ {
+  "cat": "Organ+",
+  "name": "Organ",
+  "osc": "organ",
+  "amp": [
+   0.004,
+   0.1,
+   1.0,
+   0.07
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 7000,
+  "reso": 0.0,
+  "gain": 0.22
+ },
+ {
+  "cat": "Organ+",
+  "name": "Perc Organ",
+  "osc": "organ",
+  "amp": [
+   0.002,
+   0.4,
+   0.6,
+   0.06
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 7000,
+  "reso": 0.0,
+  "gain": 0.24
+ },
+ {
+  "cat": "Organ+",
+  "name": "Flute",
+  "osc": "sine",
+  "amp": [
+   0.06,
+   0.3,
+   0.85,
+   0.2
+  ],
+  "fenv": [
+   0.06,
+   0.3,
+   0.8,
+   0.2
+  ],
+  "fenv_amt": 0.5,
+  "cutoff": 3500,
+  "reso": 0.0,
+  "gain": 0.45,
+  "noise": 0.08,
+  "vib": 0.15
+ },
+ {
+  "cat": "Organ+",
+  "name": "Brass",
+  "osc": "saw2",
+  "amp": [
+   0.06,
+   0.4,
+   0.8,
+   0.25
+  ],
+  "fenv": [
+   0.08,
+   0.5,
+   0.5,
+   0.3
+  ],
+  "fenv_amt": 1.5,
+  "cutoff": 900,
+  "reso": 0.1,
+  "gain": 0.3,
+  "detune": 6,
+  "vib": 0.05
+ },
+ {
+  "cat": "Organ+",
+  "name": "Choir",
+  "osc": "tri",
+  "amp": [
+   0.4,
+   0.6,
+   0.8,
+   1.2
+  ],
+  "fenv": [
+   0.4,
+   0.6,
+   0.8,
+   1.2
+  ],
+  "fenv_amt": 0.3,
+  "cutoff": 1400,
+  "reso": 0.3,
+  "gain": 0.4,
+  "detune": 10,
+  "noise": 0.03,
+  "vib": 0.1
+ },
+ {
+  "cat": "Organ+",
+  "name": "Church Organ",
+  "osc": "organ",
+  "amp": [
+   0.05,
+   0.1,
+   1.0,
+   0.4
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 5000,
+  "reso": 0.0,
+  "gain": 0.2,
+  "intervals": [
+   0,
+   12
+  ]
+ },
+ {
+  "cat": "Organ+",
+  "name": "Soft Organ",
+  "osc": "organ",
+  "amp": [
+   0.02,
+   0.1,
+   1.0,
+   0.15
+  ],
+  "fenv": [
+   0.01,
+   0.3,
+   1.0,
+   0.3
+  ],
+  "fenv_amt": 0.0,
+  "cutoff": 2500,
+  "reso": 0.0,
+  "gain": 0.22
+ },
+ {
+  "cat": "Organ+",
+  "name": "Reed Organ",
+  "osc": "pulse",
+  "amp": [
+   0.03,
+   0.2,
+   0.9,
+   0.15
+  ],
+  "fenv": [
+   0.03,
+   0.2,
+   0.8,
+   0.15
+  ],
+  "fenv_amt": 0.5,
+  "cutoff": 2000,
+  "reso": 0.1,
+  "gain": 0.3,
+  "pw": 0.3,
+  "vib": 0.04
+ },
+ {
+  "cat": "Organ+",
+  "name": "Accordion",
+  "osc": "pulse",
+  "amp": [
+   0.03,
+   0.2,
+   0.9,
+   0.12
+  ],
+  "fenv": [
+   0.03,
+   0.2,
+   0.8,
+   0.12
+  ],
+  "fenv_amt": 0.5,
+  "cutoff": 3000,
+  "reso": 0.1,
+  "gain": 0.26,
+  "pw": 0.4,
+  "detune": 14
+ },
+ {
+  "cat": "Organ+",
+  "name": "Oboe",
+  "osc": "pulse",
+  "amp": [
+   0.05,
+   0.3,
+   0.85,
+   0.15
+  ],
+  "fenv": [
+   0.05,
+   0.3,
+   0.6,
+   0.2
+  ],
+  "fenv_amt": 1.0,
+  "cutoff": 2200,
+  "reso": 0.2,
+  "gain": 0.36,
+  "pw": 0.18,
+  "vib": 0.1
+ },
+ {
+  "cat": "Organ+",
+  "name": "Clarinet",
+  "osc": "square",
+  "amp": [
+   0.05,
+   0.3,
+   0.85,
+   0.15
+  ],
+  "fenv": [
+   0.05,
+   0.3,
+   0.6,
+   0.2
+  ],
+  "fenv_amt": 0.5,
+  "cutoff": 1800,
+  "reso": 0.0,
+  "gain": 0.36,
+  "vib": 0.06
+ },
+ {
+  "cat": "Organ+",
+  "name": "Trumpet",
+  "osc": "saw1",
+  "amp": [
+   0.04,
+   0.3,
+   0.8,
+   0.15
+  ],
+  "fenv": [
+   0.05,
+   0.4,
+   0.4,
+   0.2
+  ],
+  "fenv_amt": 2.0,
+  "cutoff": 1200,
+  "reso": 0.15,
+  "gain": 0.32,
+  "vib": 0.08
+ },
+ {
+  "cat": "Organ+",
+  "name": "Horns",
+  "osc": "saw2",
+  "amp": [
+   0.1,
+   0.5,
+   0.8,
+   0.3
+  ],
+  "fenv": [
+   0.1,
+   0.6,
+   0.5,
+   0.3
+  ],
+  "fenv_amt": 1.2,
+  "cutoff": 700,
+  "reso": 0.1,
+  "gain": 0.3,
+  "detune": 8,
+  "vib": 0.04
+ },
+ {
+  "cat": "Organ+",
+  "name": "Voice",
+  "osc": "tri",
+  "amp": [
+   0.2,
+   0.5,
+   0.85,
+   0.6
+  ],
+  "fenv": [
+   0.2,
+   0.5,
+   0.7,
+   0.6
+  ],
+  "fenv_amt": 0.5,
+  "cutoff": 1000,
+  "reso": 0.4,
+  "gain": 0.42,
+  "noise": 0.04,
+  "vib": 0.12
+ },
+ {
+  "cat": "Organ+",
+  "name": "Harmonica",
+  "osc": "pulse",
+  "amp": [
+   0.02,
+   0.2,
+   0.9,
+   0.1
+  ],
+  "fenv": [
+   0.02,
+   0.2,
+   0.8,
+   0.1
+  ],
+  "fenv_amt": 0.8,
+  "cutoff": 2500,
+  "reso": 0.3,
+  "gain": 0.3,
+  "pw": 0.2,
+  "vib": 0.15,
+  "detune": 10
+ }
+]
