@@ -1,6 +1,8 @@
 """MPK mini 3 connection: preset readout (SysEx), live mapping, OLED/knob sync,
-and MIDI clock out so the device's arpeggiator / note repeat lock to the loops."""
+and MIDI clock out so the device's arpeggiator / note repeat lock to the loops. In clock-follow
+mode (Switchbox) the clock comes in instead: it is handed to the engine's ClockFollower."""
 import queue
+import re
 import threading
 import time
 
@@ -41,17 +43,30 @@ def _text(s, n=16):
     return list(s.encode("ascii", "replace")[:n].ljust(n, b"\0"))
 
 
+def _pick(names, hint):
+    """Port called `hint` (tolerating 'Client:' prefixes and ' N' / ' N:M' suffixes), else the first
+    one containing it. Exact first so 'mpkloop' never lands on 'mpkloop-ret'."""
+    rx = re.compile(r"^(?:.*:)?" + re.escape(hint) + r"(?:\s+\d+(?::\d+)?)?$", re.I)
+    exact = [n for n in names if rx.match(n)]
+    if exact:
+        return exact[0]
+    sub = [n for n in names if hint.lower() in n.lower()]
+    return sub[0] if sub else None
+
+
 def find_ports(hint="MPK"):
-    ins = [n for n in mido.get_input_names() if hint.lower() in n.lower()]
-    outs = [n for n in mido.get_output_names() if hint.lower() in n.lower()]
-    return (ins[0] if ins else None), (outs[0] if outs else None)
+    """hint is 'name' for both directions or 'in_name,out_name' (Windows loopMIDI: 'mpkloop,mpkloop-ret')."""
+    in_hint, _, out_hint = hint.partition(",")
+    return _pick(mido.get_input_names(), in_hint), _pick(mido.get_output_names(), out_hint or in_hint)
 
 
 class MPK:
-    def __init__(self, engine, port_hint="MPK", device_sync=True, ext_clock=True, monitor=None):
+    def __init__(self, engine, port_hint="MPK", device_sync=True, ext_clock=True, monitor=None,
+                 send_clock=True):
         self.engine = engine
         self.device_sync = device_sync
         self.ext_clock = ext_clock
+        self.send_clock = send_clock    # False when following an external clock (Switchbox feeds the MPK)
         self.monitor = monitor          # optional callable(msg) for --monitor
         self.inp = self.out = None
         self.map = dict(DEFAULT_MAP)
@@ -81,7 +96,7 @@ class MPK:
             self.knob_rel = device_sync
         else:
             self.device_sync = False
-        if self.out:
+        if self.out and self.send_clock:
             threading.Thread(target=self._clock_thread, daemon=True).start()
         if self.device_sync:
             engine.on_page_change = self._sync_req.set
@@ -152,7 +167,7 @@ class MPK:
 
     def close(self):
         self.restore()
-        if self.out:
+        if self.out and self.send_clock:
             self.send(mido.Message("stop"))
         for p in (self.inp, self.out):
             if p:
@@ -211,7 +226,12 @@ class MPK:
             if len(d) > 4 and d[0] == 0x47 and d[2] == 0x49 and d[3] == 0x67:
                 self.sysex_replies.put(d)
             return
-        if msg.type in ("clock", "active_sensing", "start", "stop", "continue"):
+        if msg.type in ("clock", "start", "stop", "continue"):
+            f = self.engine.follower
+            if f is not None:
+                f.on_message(msg.type)      # timestamp taken here, as close to the port as we can get
+            return
+        if msg.type == "active_sensing":
             return
         if self.monitor:
             self.monitor(msg)

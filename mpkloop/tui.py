@@ -85,7 +85,10 @@ class HeaderBar(Panel):
         bar_no = e.pos // e.bar + 1 if e.running else 0
         beat = int((e.pos % e.bar) / e.beat_len) + 1 if e.running else 0
         beats = " ".join("●" if i + 1 == beat else "○" for i in range(e.beats))
-        t.append(f"  {e.tempo:5.1f} BPM  bar {bar_no:>2}  ", style="bold")
+        t.append(f"  {e.tempo:5.1f} BPM  ", style="bold")
+        if e.clock_label:
+            t.append(f"{e.clock_label}  ", style=DIM if e.following else f"bold {YELLOW}")
+        t.append(f"bar {bar_no:>2}  ", style="bold")
         t.append(beats, style=f"bold {ACCENT}")
         t.append(f"   rec mode: {e.rec_mode}", style=CYAN)
         b = 8 * e.track_bank

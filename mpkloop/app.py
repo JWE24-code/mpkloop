@@ -21,6 +21,7 @@ from . import dsp
 from .demos import make_demos, slug, write_session
 from .engine import FX_PADS, Engine
 from .export import export
+from .clockfollow import ClockFollower
 from .midi_io import MPK
 from .sampler import to_stereo
 
@@ -59,7 +60,7 @@ ARP / SUSTAIN       arp follows the loop tempo; sustain pedal holds synth notes
 ───────────────────────────────────────────────────────────────────────────────
 Recording: with a loop playing, recording starts and stops on the next bar line
 (a press just after a downbeat counts for that downbeat).  Rec Mode is on the
-Global page, knob 2: Free→Tempo (first loop sets the tempo), Quantize, or a
+Global page, knob 2: Free→Tempo (first loop sets the tempo; off while following a clock), Quantize, or a
 fixed 1/2/4/8 bars.  Everything you play live is captured; loops never record
 each other.  The PADS panel on the right shows what the pads do right now.
 ───────────────────────────────────────────────────────────────────────────────
@@ -518,7 +519,8 @@ class UI:
         self.put(0, 0, " MPKLOOP ", curses.A_REVERSE | curses.A_BOLD)
         self.put(0, 10, f"{tstate}", curses.color_pair(tcol) | curses.A_BOLD)
         beats_vis = " ".join("●" if (i + 1) == beat else "○" for i in range(e.beats))
-        self.put(0, 22, f"{e.tempo:5.1f} BPM  bar {bar_no:>2}  {beats_vis}", curses.A_BOLD)
+        clk = f" {e.clock_label}" if e.clock_label else ""
+        self.put(0, 22, f"{e.tempo:5.1f} BPM{clk}  bar {bar_no:>2}  {beats_vis}", curses.A_BOLD)
         self.put(0, 50, f"rec mode: {e.rec_mode}", curses.color_pair(C_CYAN))
         if e.session_name:
             self.put(0, 74, f"session: {e.session_name}{'*' if e.changed else ''}", curses.A_DIM)
@@ -850,9 +852,15 @@ def main():
     ap.add_argument("--sr", type=int, default=48000)
     ap.add_argument("--audio", default=None, help="audio device name/index (see --list)")
     ap.add_argument("--no-input", action="store_true", help="don't open an audio input")
-    ap.add_argument("--midi", default="MPK", help="substring of the MIDI port name")
+    ap.add_argument("--midi", default="MPK", help="MIDI port name, or \"in,out\" when they differ (Switchbox on Windows: mpkloop,mpkloop-ret)")
     ap.add_argument("--no-device-sync", action="store_true",
                     help="don't write the page/knob names to the MPK (knobs stay absolute)")
+    ap.add_argument("--clock", choices=["follow", "master"], default=None,
+                    help="follow: lock to the incoming MIDI clock/start/stop (Switchbox) and send none; "
+                         "master: tempo from the first loop, send clock to the MPK "
+                         "(default: follow when --midi names mpkloop, else master)")
+    ap.add_argument("--clock-offset", type=float, default=0.0, metavar="MS",
+                    help="follow mode: shift the loops against the clock (+ = play earlier) to trim audio latency")
     ap.add_argument("--no-ext-clock", action="store_true", help="leave the MPK arpeggiator on its own clock")
     ap.add_argument("--list", action="store_true", help="list audio and MIDI devices")
     ap.add_argument("--monitor", action="store_true", help="print incoming MIDI and exit with Ctrl-C")
@@ -877,7 +885,7 @@ def main():
     e = Engine(a.sr, a.block)
 
     if a.monitor:
-        mpk = MPK(e, a.midi, device_sync=False, ext_clock=False, monitor=lambda m: print(m, flush=True))
+        mpk = MPK(e, a.midi, device_sync=False, ext_clock=False, send_clock=False, monitor=lambda m: print(m, flush=True))
         if not mpk.connected_name:
             sys.exit("No MPK found")
         print(f"Listening on {mpk.connected_name}, preset {mpk.map}\nCtrl-C to quit")
@@ -917,7 +925,11 @@ def main():
     e.input_latency = int(round((lat[0] + lat[1]) * a.sr))
     info = f"{a.sr // 1000}k/{a.block} ({1000 * a.block / a.sr:.0f} ms)"
 
-    mpk = MPK(e, a.midi, device_sync=not a.no_device_sync, ext_clock=not a.no_ext_clock)
+    follow = (a.clock or ("follow" if "mpkloop" in a.midi.lower() else "master")) == "follow"
+    if follow:
+        e.follower = ClockFollower(e.post)
+        e.ext_ahead = a.clock_offset / 1000.0
+    mpk = MPK(e, a.midi, device_sync=not a.no_device_sync, ext_clock=not a.no_ext_clock, send_clock=not follow)
     if not mpk.connected_name:
         e.say("MPK mini not found - use the computer keys, or plug it in and restart")
     else:

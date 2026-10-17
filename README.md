@@ -16,6 +16,7 @@ mpkloop --make-demos    # (re)render the four demo sessions
 mpkloop --block 256     # lower latency; use 1024 if you hear crackles
 mpkloop --list          # show audio + MIDI devices
 mpkloop --monitor       # print incoming MIDI (check your preset)
+mpkloop --midi Switchbox:mpkloop   # follow the Switchbox clock (see "Clock" below)
 ```
 
 In the app: `h` shows every key, `L` opens the **lessons** in your browser (English
@@ -32,7 +33,7 @@ and Dutch, with three songs to make step by step).
 | **PROG CHANGE** button | Pads become choosers: bank A picks the knob page, bank B pads 1–7 pick a sound category (tap again for the next sound) and pad 8 the next drum kit. Press again to leave. |
 | **Knobs 1–8** | Whatever the current page says. The MPK's screen shows the name and value. |
 | **Joystick** | Left/right bends the pitch. Up adds vibrato and opens the filter. |
-| **ARP / NOTE REPEAT** | Work as usual and follow the loop tempo. |
+| **ARP / NOTE REPEAT** | Work as usual and follow the loop tempo (or the Switchbox clock, see "Clock"). |
 | **Sustain pedal** | Holds synth notes. |
 | **PROG SELECT** | Leave it alone while mpkloop runs. |
 
@@ -54,13 +55,14 @@ Bank A + PROG CHANGE picks the first eight pages; `←` `→` reach them all.
 | Sampler | Pitch, Start, Length, Attack, Release, Volume, Filter, Reverse |
 
 Tempo locks as soon as a loop exists. Set it first (Global, knob 1), or use rec
-mode **Free→Tempo**: then your first loop decides the tempo.
+mode **Free→Tempo**: then your first loop decides the tempo. (Following an external
+clock, the clock decides: the Tempo knob shows `ext`, see "Clock".)
 
 ## Computer keys
 
 | Key | Does |
 |---|---|
-| `space` | start / stop |
+| `space` | start / stop (following a clock: starts/stops mpkloop only, never the shared clock) |
 | `1`–`8` | same as tapping a loop pad · `Shift`+`1`–`8` mute on the next beat |
 | `B` | pads and keys 1–8 address tracks 9–16 (press again: 1–8) |
 | `z`+`1`–`8` solo a track · `Z` | solo off for all |
@@ -86,7 +88,7 @@ mode **Free→Tempo**: then your first loop decides the tempo.
 - **Quantize** (default): the first loop gets a 1-bar count-in; after that recording
   starts and stops on bar lines. Pressing just after a downbeat still counts.
 - **Free→Tempo**: the first loop starts and stops exactly when you tap; the tempo
-  comes from its length.
+  comes from its length. (Not available while following a clock: it records like Quantize.)
 - **1/2/4/8 bars**: one tap records exactly that many bars.
 - Tracks can have different lengths. A 1-bar beat under a 4-bar chord loop is fine.
 - Mutes land on the next beat so they stay in time. Solo (`z`) lets you hear one
@@ -154,11 +156,42 @@ tweaks included) as a new sound. `d` deletes a user sound or hides a factory one
   `seq.wav` and `mix.wav` (the stems add up to the mix), and `loops.mid` with the notes
   you played (synth ch 1, sampler ch 3, chops ch 4, drums ch 10, GM numbers).
 
+## Clock: master or follower
+
+`--clock master` (the default unless the MIDI port is Switchbox's): the first loop sets the
+tempo and mpkloop sends MIDI clock/start/stop to the MPK, so its arp locks to the loops.
+
+`--clock follow` (default when `--midi` contains `mpkloop`, i.e. `--midi Switchbox:mpkloop`, or
+`mpkloop,mpkloop-ret` on Windows) makes mpkloop a slave of the shared 24 ppqn clock that
+Switchbox (a MIDI router, not part of this repo) broadcasts to every app. mpkloop then sends **no** clock
+to the MPK (Switchbox feeds the arp; the `ARP_CLOCK` external flag is still set by device sync).
+
+- **Tempo**: smoothed from the tick arrival times (least-squares over 4 to 16 beats, outlier
+  ticks rejected, a tempo change is picked up within a few seconds, snapped to 0.1 BPM like
+  Switchbox's tempos). It goes into the engine while no loop exists; the Tempo knob shows `ext`.
+  Loops that already exist keep their length: if the clock tempo moves afterwards you get a
+  message, and clearing the loops makes mpkloop follow again.
+- **Start/Stop**: MIDI Start starts the transport with loop phase 0 on the start tick (Start while
+  playing restarts, Stop stops like `space`). `space` or a loop pad while stopped starts mpkloop
+  locally on the nearest earlier bar line of the clock's grid, so it stays in phase. It cannot start
+  the global clock. With no ticks for more than 1 s the header shows `waiting for clock` and mpkloop
+  runs on its own clock (Free→Tempo works again, loops keep playing).
+- **Recording** is quantised to the clock's bars (the Quantize / N bars modes); the clock is the count-in.
+- **Timing**: the audio callback owns the sample clock. Tick times only feed the tempo estimate and the
+  start alignment (a low-passed callback-time to sample-position map absorbs scheduling jitter), so MIDI
+  jitter never moves loop boundaries. After the start the loops run on the audio clock: a sound card
+  that is 20 ppm off the clock drifts about 1 ms per 50 s against it; press Start again to re-align.
+  `--clock-offset MS` shifts the loops earlier (+) or later (-) to trim audio output latency.
+
+Measured with a synthetic tick stream (2 ms jitter, 0.5 % outlier ticks): tempo within 0.15 BPM
+from the first estimate (about 2 s) and within 0.01 BPM once settled, at 90, 120 and 140 BPM; start
+alignment within 0.5 ms; loops on the bar grid.
+
 ## Device sync
 
 On start mpkloop reads the MPK's active preset over SysEx and writes a temporary
 version to the device's **RAM only**: the screen shows page and sound names, knobs go
-relative, the arp follows mpkloop's clock. Stored programs are never touched; it's
+relative, the arp follows mpkloop's clock (or Switchbox's, when following). Stored programs are never touched; it's
 undone on exit. If mpkloop crashes, re-select the program on the MPK. Opt out with
 `--no-device-sync` / `--no-ext-clock`.
 

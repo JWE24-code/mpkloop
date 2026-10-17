@@ -32,9 +32,10 @@ class Param:
     """A knob-controllable parameter, stored as a normalised 0..1 value."""
 
     def __init__(self, label, apply, lo=0.0, hi=1.0, default=0.0, fmt="{:.2f}",
-                 choices=None, curve=1.0, ticks=100, locked=None, get=None):
+                 choices=None, curve=1.0, ticks=100, locked=None, get=None, lock_label=None):
         self.label, self.apply_fn, self.lo, self.hi, self.get = label, apply, lo, hi, get
         self.fmt, self.choices, self.curve, self.locked = fmt, choices, curve, locked
+        self.lock_label = lock_label
         self.ticks = ticks if not choices else max(3 * (len(choices) - 1), 1)
         self.norm = 0.0
         self.set_value(default)
@@ -65,7 +66,7 @@ class Param:
 
     def text(self):
         if self.locked and self.locked():
-            return "LOCK"
+            return self.lock_label() if self.lock_label else "LOCK"
         v = self.value
         return self.fmt(v) if callable(self.fmt) else self.fmt.format(v)
 
@@ -125,6 +126,18 @@ class Engine:
         self.sr, self.block = sr, block
         self.events = deque()
         self.lock_tempo = lambda: any(t.state != "empty" for t in self.tracks)
+
+        # external clock (clock-follow mode, see clockfollow.py); None = we are the master
+        self.follower = None
+        self.now = time.perf_counter     # the clock the PLL and the tick timestamps use
+        self.ext_ahead = 0.0             # seconds: render ahead of the grid (output latency trim)
+        self.ext_bpm = None              # last tempo estimate from the clock
+        self.grid_origin = None          # clock time that transport sample 0 sits on
+        self.total = 0                   # samples rendered since start (also while stopped)
+        self.toff = None                 # low-passed (callback time - total / sr)
+        self.t_block = None              # smoothed clock time of the first sample of this block
+        self._blocks = 0
+        self._ext_warned = False
 
         self.beats = 4
         self.bar = 0
@@ -233,8 +246,8 @@ class Engine:
                 Param("Live Reverb", lambda v: setattr(self, "live_rsend", v), 0, 1, 0.15, "{:.0%}"),
             ]),
             ("GLOBAL", [
-                Param("Tempo", self.set_tempo, 50, 200, 120, "{:.1f}", ticks=300, locked=self.lock_tempo,
-                      get=lambda: self.tempo),
+                Param("Tempo", self.set_tempo, 50, 200, 120, "{:.1f}", ticks=300, locked=lambda: self.following or self.lock_tempo(),
+                      get=lambda: self.tempo, lock_label=lambda: "ext" if self.following else "LOCK"),
                 Param("Rec Mode", lambda v: setattr(self, "rec_mode", v), choices=REC_MODES,
                       default="Quantize", fmt="{}"),
                 Param("Metronome", lambda v: setattr(self, "metro_level", v), 0, 1, 0.5, "{:.0%}"),
@@ -313,6 +326,19 @@ class Engine:
     def set_tempo(self, bpm):
         self.bar = int(round(60.0 / bpm * self.beats * self.sr))
         self.tempo = 60.0 * self.beats * self.sr / self.bar
+
+    @property
+    def following(self):
+        """True while a MIDI clock is arriving (clock-follow mode)."""
+        f = self.follower
+        return f is not None and f.alive(self.now())
+
+    @property
+    def clock_label(self):
+        """'' (we are the master) / 'ext' / 'waiting for clock', for the UI header."""
+        if self.follower is None:
+            return ""
+        return "ext" if self.following else "waiting for clock"
 
     @property
     def beat_len(self):
@@ -425,7 +451,24 @@ class Engine:
         elif kind == "pressure":
             self.pressure = ev[1]
         elif kind == "transport":
-            self.stop_transport() if self.running else self.start_transport()
+            if self.running:
+                self.stop_transport()
+            else:
+                if self.follower is not None and not self.following:
+                    self.say("waiting for clock - starting on the local clock")
+                self.start_transport()
+        elif kind == "ext_tempo":
+            self._ext_tempo(ev[1])
+        elif kind == "ext_start":
+            if self.running:
+                self.stop_transport()       # Start while playing = restart from the top
+            self.start_transport(origin=ev[1])
+        elif kind == "ext_cont":
+            if not self.running:
+                self.start_transport()
+        elif kind == "ext_stop":
+            if self.running:
+                self.stop_transport()
         elif kind == "clear_all":
             for i in range(NTRACKS):
                 self.clear(i, quiet=True)
@@ -734,7 +777,9 @@ class Engine:
 
     # ------------------------------------------------------------ transport
 
-    def start_transport(self):
+    def start_transport(self, origin=None):
+        """Start playing. Following a clock, transport sample 0 sits on a bar line of the external
+        grid (`origin` = the Start tick time, else the latest bar line), so the loops enter mid-bar."""
         if self.running:
             return
         for t in self.tracks:
@@ -742,10 +787,50 @@ class Engine:
                 t.anchor = 0  # restart every loop from its top
                 t.phase = 0.0
                 t.on_grid = True
-        self.pos = 0
+        self.pos = self._grid_pos(origin)
         self.running = True
         self.transport_gen += 1
-        self.clock_ref = (0, time.perf_counter())
+        self.clock_ref = (self.pos, time.perf_counter())
+
+    def _grid_time(self):
+        """Clock time of the first sample of the block being processed (PLL smoothed)."""
+        return (self.t_block if self.t_block is not None else self.now()) + self.ext_ahead
+
+    def _grid_pos(self, origin=None):
+        """Transport sample for 'now' when sample 0 is on the external grid; 0 without a clock."""
+        f = self.follower
+        self.grid_origin = None
+        if f is None or not f.alive(self.now()) or f.period is None:
+            return 0
+        if origin is None:
+            origin = f.bar_origin_time(self._grid_time(), 24 * self.beats)
+            if origin is None:
+                return 0
+        self.grid_origin = origin
+        return self._pos_on_grid()
+
+    def _pos_on_grid(self):
+        ticks = (self._grid_time() - self.grid_origin) / self.follower.period
+        return max(0, int(round(ticks * self.beat_len / 24.0)))
+
+    def _ext_tempo(self, bpm):
+        """New tempo estimate from the clock. Applied while no loop exists; recorded loops keep their length."""
+        self.ext_bpm = bpm
+        if self.lock_tempo():
+            if abs(bpm - self.tempo) > 0.3 and not self._ext_warned:
+                self._ext_warned = True
+                self.say(f"clock is at {bpm:.1f} BPM but the loops are {self.tempo:.1f}: clear them to follow")
+            return
+        old = self.bar
+        self.set_tempo(bpm)
+        self.pages[7][1][0].set_value(self.tempo, apply=False)
+        self._ext_warned = False
+        if self.running and self.bar != old:
+            if self.grid_origin is not None:
+                self.pos = self._pos_on_grid()          # keep the bar lines on the external grid
+            else:
+                self.pos = int(round(self.pos * self.bar / old))
+            self.count_in_end = None
 
     def stop_transport(self):
         self.running = False
@@ -850,17 +935,24 @@ class Engine:
             t.state = "play"
 
     def arm(self, t):
+        ext = self.following
+        if ext and not self.lock_tempo() and self.follower.bpm:
+            self._ext_tempo(self.follower.bpm)      # the loop locks the tempo: use the best estimate we have
         bar = self.bar
         late = min(bar // 8, int(0.25 * self.sr))
         if not self.running:
-            if self._empty_session() and self.rec_mode == "Free→Tempo":
+            if self._empty_session() and self.rec_mode == "Free→Tempo" and not ext:
                 self.start_transport()
                 t.S, t.free, t.state = 0, True, "rec"
                 self.say(f"T{t.i + 1}: recording (free) - tap again to close loop & set tempo")
                 return
             self.start_transport()
-            start = bar if self.count_in else 0
-            self.count_in_end = start if self.count_in else None
+            if ext:
+                # the clock is the count-in: start recording on the next bar line of its grid
+                start = (self.pos // bar + 1) * bar
+            else:
+                start = bar if self.count_in else 0
+                self.count_in_end = start if self.count_in else None
         else:
             prev = (self.pos // bar) * bar
             if self.pos - prev <= late and self.count_in_end is None:
@@ -1032,6 +1124,14 @@ class Engine:
     def process(self, inp, n):
         """Render one block. inp: (n,2) input or None. Returns (n,2) float32."""
         t0 = time.perf_counter()
+        # callback time -> transport time: low-pass the offset (late wake-ups only ever push it up)
+        d = self.now() - self.total / self.sr
+        if self.toff is None or self._blocks < 32:
+            self.toff = d
+        else:
+            self.toff += (d - self.toff) * (0.1 if d < self.toff else 0.005)
+        self._blocks += 1
+        self.t_block = self.toff + self.total / self.sr
         while self.events:
             self._handle(self.events.popleft())
 
@@ -1177,6 +1277,7 @@ class Engine:
         out = (np.tanh(out * self.master) if self.clip else out * self.master) + click
         self.levels = np.maximum(np.abs(out).max(axis=0), self.levels * 0.85)
 
+        self.total += n
         if self.running:
             self.pos += n
             self.clock_ref = (self.pos, time.perf_counter())
